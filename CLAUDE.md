@@ -1,250 +1,478 @@
-# Agentic Coding Boilerplate - AI Assistant Guidelines
+# TherapistOS - Project Instructions for Claude Code & BMAD Agents
 
 ## Project Overview
 
-This is a Next.js 16 boilerplate for building AI-powered applications with authentication, database, and modern UI components.
+**TherapistOS** is a two-sided marketplace platform for alternative therapists in Israel.
 
-### Tech Stack
+**Type:** Hebrew-first, mobile-optimized web platform
+**Target Market:** Israel alternative/complementary therapy practitioners
+**Tech Stack:** Next.js 16, React 19, TypeScript, PostgreSQL, Drizzle ORM, Better Auth
+**Development Method:** BMAD-METHOD (Breakthrough Method of Agile AI-Driven Development)
+**Goal (90 days):** 200 therapists onboarded, 1,000 client leads, first revenue
 
-- **Framework**: Next.js 16 with App Router, React 19, TypeScript
-- **AI Integration**: Vercel AI SDK 5 + OpenRouter (access to 100+ AI models)
-- **Authentication**: BetterAuth with Email/Password
-- **Database**: PostgreSQL with Drizzle ORM
-- **UI**: shadcn/ui components with Tailwind CSS 4
-- **Styling**: Tailwind CSS with dark mode support (next-themes)
+---
 
-## AI Integration with OpenRouter
+## ⚠️ CRITICAL REQUIREMENTS
 
-### Key Points
+### 1. Hebrew/RTL Support (MANDATORY)
+- **ALL** UI must be RTL (Right-to-Left)
+- Set `dir="rtl"` on all layouts and HTML elements
+- Use Tailwind **logical properties** ONLY:
+  - ✅ `ps-4` `pe-2` (padding-inline-start/end)
+  - ✅ `ms-auto` `me-4` (margin-inline-start/end)
+  - ❌ NEVER use `pl-4`, `pr-2`, `ml-auto`, `mr-4`
+- **Heebo font** (Google Fonts) for all Hebrew text
+- **All labels, buttons, forms, emails in Hebrew**
+- English only in code, comments, and technical docs
 
-- This project uses **OpenRouter** as the AI provider, NOT direct OpenAI
-- OpenRouter provides access to 100+ AI models through a single unified API
-- Default model: `openai/gpt-5-mini` (configurable via `OPENROUTER_MODEL` env var)
-- Users browse models at: https://openrouter.ai/models
-- Users get API keys from: https://openrouter.ai/settings/keys
+### 2. Role-Based Access Control (RBAC)
+**Four user roles:**
+- **Client** - Browse directory, send leads
+- **Therapist** - Manage profile, leads, bookings, request services
+- **Admin** - Verify credentials, manage therapists, assign service requests
+- **Partner** - View assigned service requests (V1+)
 
-### AI Implementation Files
+**Implementation:**
+```typescript
+import { requireRole } from "@/lib/rbac";
+const session = await requireRole("therapist");
+```
 
-- `src/app/api/chat/route.ts` - Chat API endpoint using OpenRouter
-- Package: `@openrouter/ai-sdk-provider` (not `@ai-sdk/openai`)
-- Import: `import { openrouter } from "@openrouter/ai-sdk-provider"`
+### 3. Phone Verification (Israeli Market)
+- **Format:** +972-XX-XXX-XXXX
+- OTP verification required for therapists
+- Normalize: `05XXXXXXXX` → `+972-5X-XXX-XXXX`
+- Implemented in `lib/phone-verification.ts`
+
+### 4. File Upload Security
+- **Allowed:** PDF, JPG, PNG only
+- **Max size:** 5MB per file
+- **Storage:** Vercel Blob (production) / local (dev)
+
+### 5. AI Integration
+- **Provider:** OpenRouter (NOT OpenAI directly)
+- **Use case:** Hebrew message drafting
+- **Model:** Use `OPENROUTER_MODEL` from env
+- **Always editable** - drafts must be reviewable
+
+### 6. Privacy & Compliance
+- **NO medical records storage**
+- **Disclaimers everywhere:** "This is not medical/emergency service"
+- GDPR/Israel Privacy Law compliance
+
+---
+
+## Tech Stack (from Boilerplate)
+
+- **Framework**: Next.js 16 with App Router, React 19, TypeScript 5.9
+- **AI**: Vercel AI SDK 5 + OpenRouter (100+ models)
+- **Auth**: Better Auth with Email/Password + Phone OTP (extended)
+- **Database**: PostgreSQL + Drizzle ORM
+- **UI**: shadcn/ui + Tailwind CSS 4 + RTL support
+- **File Storage**: Vercel Blob / local filesystem
+- **Package Manager**: pnpm
+
+---
 
 ## Project Structure
 
 ```
-src/
-├── app/                          # Next.js App Router
-│   ├── (auth)/                  # Auth route group
-│   │   ├── login/               # Login page
-│   │   ├── register/            # Registration page
-│   │   ├── forgot-password/     # Forgot password page
-│   │   └── reset-password/      # Reset password page
-│   ├── api/
-│   │   ├── auth/[...all]/       # Better Auth catch-all route
-│   │   ├── chat/route.ts        # AI chat endpoint (OpenRouter)
-│   │   └── diagnostics/         # System diagnostics
-│   ├── chat/page.tsx            # AI chat interface (protected)
-│   ├── dashboard/page.tsx       # User dashboard (protected)
-│   ├── profile/page.tsx         # User profile (protected)
-│   ├── page.tsx                 # Home/landing page
-│   └── layout.tsx               # Root layout
-├── components/
-│   ├── auth/                    # Authentication components
-│   │   ├── sign-in-button.tsx   # Sign in form
-│   │   ├── sign-up-form.tsx     # Sign up form
-│   │   ├── forgot-password-form.tsx
-│   │   ├── reset-password-form.tsx
-│   │   ├── sign-out-button.tsx
-│   │   └── user-profile.tsx
-│   ├── ui/                      # shadcn/ui components
-│   │   ├── button.tsx
-│   │   ├── card.tsx
-│   │   ├── dialog.tsx
-│   │   ├── dropdown-menu.tsx
-│   │   ├── avatar.tsx
-│   │   ├── badge.tsx
-│   │   ├── separator.tsx
-│   │   ├── mode-toggle.tsx      # Dark/light mode toggle
-│   │   └── github-stars.tsx
-│   ├── site-header.tsx          # Main navigation header
-│   ├── site-footer.tsx          # Footer component
-│   ├── theme-provider.tsx       # Dark mode provider
-│   ├── setup-checklist.tsx      # Setup guide component
-│   └── starter-prompt-modal.tsx # Starter prompts modal
-└── lib/
-    ├── auth.ts                  # Better Auth server config
-    ├── auth-client.ts           # Better Auth client hooks
-    ├── db.ts                    # Database connection
-    ├── schema.ts                # Drizzle schema (users, sessions, etc.)
-    ├── storage.ts               # File storage abstraction (Vercel Blob / local)
-    └── utils.ts                 # Utility functions (cn, etc.)
+TherapistOS/
+├── .bmad-core/                      # BMAD agents & framework
+│   ├── agents/                      # PM, Architect, Dev, QA, SM, etc.
+│   └── tasks/                       # BMAD task commands
+├── .claude/commands/BMad/           # Claude Code BMAD commands
+│   ├── agents/                      # /analyst, /architect, /dev, /sm, /qa
+│   └── tasks/                       # /shard-doc, /create-next-story
+├── v0-ui-work/                      # V0-generated UI (reference)
+│   ├── app/
+│   ├── components/
+│   └── lib/
+├── docs/
+│   ├── brief.md                     # Product brief
+│   ├── prd.md                       # Full PRD
+│   ├── user-journeys.md             # User flows
+│   ├── architecture.md              # System architecture
+│   ├── prd/                         # Sharded Epic files
+│   ├── architecture/                # Sharded architecture sections
+│   └── stories/                     # User stories (YAML)
+├── src/
+│   ├── app/
+│   │   ├── (public)/                # Public routes (no auth)
+│   │   ├── (auth)/                  # Auth pages
+│   │   ├── (therapist)/             # Therapist-only routes
+│   │   ├── (admin)/                 # Admin-only routes
+│   │   └── api/
+│   ├── components/
+│   │   ├── auth/                    # From boilerplate
+│   │   ├── therapist/               # Therapist-specific
+│   │   ├── directory/               # Public directory
+│   │   ├── admin/                   # Admin components
+│   │   └── ui/                      # shadcn/ui
+│   └── lib/
+│       ├── auth.ts                  # Better Auth (extended)
+│       ├── schema.ts                # Drizzle schema (EXTENDED)
+│       ├── rbac.ts                  # Role-based access
+│       ├── phone-verification.ts    # OTP service
+│       └── email.ts                 # Email (Hebrew)
+└── public/
+    └── uploads/                     # Local file storage
 ```
+
+---
+
+## Database Schema Extensions
+
+### Extend Existing User Table
+```typescript
+export const user = pgTable("user", {
+  // ... existing Better Auth fields
+  role: text("role", {
+    enum: ["client", "therapist", "admin", "partner"]
+  }).notNull().default("client"),
+  phone: text("phone"),
+  phoneVerified: boolean("phone_verified").default(false),
+  locale: text("locale").default("he"),
+});
+```
+
+### New Tables (13 total)
+1. **therapistProfile** - Public info with slug for SEO
+2. **modality** - Treatment types (Hebrew/English)
+3. **therapistModality** - Many-to-many
+4. **issue** - Problems treated (חרדה, כאבי גב)
+5. **therapistIssue** - Many-to-many
+6. **credential** - Diplomas with verification
+7. **lead** - Client inquiries with status
+8. **booking** - Appointments with reminders
+9. **serviceRequest** - Insurance/pension/tax
+10. **partner** - Service providers
+11. **groupEvent** - Group sessions (V1+)
+12. **groupEventAttendee** - Registration (V1+)
+13. **review** - Client feedback (V1+)
+
+**Full schema:** See `docs/architecture/database-schema.md` (after /architect)
+
+---
+
+## Epic Breakdown (6 Weeks)
+
+### Epic 1: Foundation & Auth (Week 1)
+- Extend user table (role, phone)
+- Phone OTP verification
+- RBAC utilities
+- Auth UI, basic dashboards
+
+**Files:** `schema.ts`, `rbac.ts`, `phone-verification.ts`
+
+### Epic 2: Profiles & Directory (Week 2)
+- Therapist profile model
+- Profile builder UI (Hebrew)
+- Credential upload
+- Public directory, SEO profiles
+
+**Files:** `components/therapist/`, `app/(public)/t/[slug]/`
+
+### Epic 3: Leads & CRM (Week 3)
+- Lead model with status
+- Lead capture form
+- Lead inbox, email notifications
+
+**Files:** `components/directory/contact-modal.tsx`, `lib/email.ts`
+
+### Epic 4: Bookings & AI (Week 4)
+- Booking model, reminders
+- AI message drafting (Hebrew)
+- Booking calendar
+
+**Files:** `app/api/ai/message-draft/`, `lib/reminders.ts`
+
+### Epic 5: Referrals & Admin (Weeks 5-6)
+- ServiceRequest model
+- Admin verification queue
+- Partner assignment, analytics
+
+**Files:** `app/(admin)/credentials/`, `app/(admin)/service-requests/`
+
+---
+
+## BMAD-METHOD Workflow (Cursor-Only)
+
+**You are working within BMAD-METHOD. Follow strictly:**
+
+### Phase 1: Architecture (One-Time)
+```
+/architect
+Design complete system architecture based on docs/prd.md:
+- Database schema (14 tables)
+- API routes
+- Auth + RBAC
+- RTL/Hebrew strategy
+- File storage
+- Email templates
+- AI integration
+
+Save to docs/architecture.md
+```
+
+### Phase 2: Document Sharding
+```
+/bmad-master
+*shard-doc docs/prd.md prd
+```
+→ Creates Epic 1-5 files
+
+```
+/bmad-master
+*shard-doc docs/architecture.md architecture
+```
+→ Creates architecture sections
+
+### Phase 3: Development Cycle
+**For each Epic:**
+
+**Step 1: Story Creation**
+```
+/sm
+*create-next-story
+```
+→ Creates story YAML in `docs/stories/`
+
+**Step 2: Implementation**
+```
+/dev
+[Provide story file path]
+```
+→ Implements, tests, commits
+
+**Step 3: Review (Optional)**
+```
+/qa
+[Provide story file path]
+```
+→ Reviews, suggests improvements
+
+**Repeat** for all stories in Epic, then next Epic.
+
+---
 
 ## Environment Variables
 
-Required environment variables (see `env.example`):
-
 ```env
 # Database
-POSTGRES_URL=postgresql://user:password@localhost:5432/db_name
+POSTGRES_URL="postgresql://..."
 
-# Better Auth
-BETTER_AUTH_SECRET=32-char-random-string
+# Auth
+BETTER_AUTH_SECRET="32-char-random"
 
-# AI via OpenRouter
-OPENROUTER_API_KEY=sk-or-v1-your-key
-OPENROUTER_MODEL=openai/gpt-5-mini  # or any model from openrouter.ai/models
+# AI (Hebrew messages)
+OPENROUTER_API_KEY="sk-or-v1-..."
+OPENROUTER_MODEL="openai/gpt-4o-mini"
 
 # App
-NEXT_PUBLIC_APP_URL=http://localhost:3000
+NEXT_PUBLIC_APP_URL="http://localhost:3000"
 
 # File Storage (optional)
-BLOB_READ_WRITE_TOKEN=  # Leave empty for local dev, set for Vercel Blob in production
+BLOB_READ_WRITE_TOKEN=""
+
+# Email (optional)
+RESEND_API_KEY=""
+
+# SMS for OTP (optional, can mock)
+TWILIO_ACCOUNT_SID=""
+TWILIO_AUTH_TOKEN=""
 ```
 
-## Available Scripts
+---
+
+## Available Scripts (from Boilerplate)
 
 ```bash
-npm run dev          # Start dev server (DON'T run this yourself - ask user)
-npm run build        # Build for production (runs db:migrate first)
-npm run build:ci     # Build without database (for CI/CD pipelines)
-npm run start        # Start production server
-npm run lint         # Run ESLint (ALWAYS run after changes)
-npm run typecheck    # TypeScript type checking (ALWAYS run after changes)
-npm run db:generate  # Generate database migrations
-npm run db:migrate   # Run database migrations
-npm run db:push      # Push schema changes to database
-npm run db:studio    # Open Drizzle Studio (database GUI)
-npm run db:dev       # Push schema for development
-npm run db:reset     # Reset database (drop all tables)
+pnpm dev          # Start dev (DON'T run - ask user)
+pnpm build        # Build (runs db:migrate first)
+pnpm lint         # ALWAYS run after changes
+pnpm typecheck    # ALWAYS run after changes
+pnpm db:generate  # Generate migrations
+pnpm db:migrate   # Run migrations
+pnpm db:push      # Push schema
+pnpm db:studio    # Database GUI
 ```
 
-## Documentation Files
+---
 
-The project includes technical documentation in `docs/`:
+## Development Guidelines
 
-- `docs/technical/ai/streaming.md` - AI streaming implementation guide
-- `docs/technical/ai/structured-data.md` - Structured data extraction
-- `docs/technical/react-markdown.md` - Markdown rendering guide
-- `docs/technical/betterauth/polar.md` - Polar payment integration
-- `docs/business/starter-prompt.md` - Business context for AI prompts
+### Code Style
+- TypeScript strict mode
+- ESLint - fix all warnings
+- Prettier - auto-format
+- Functional components with hooks
+- Server Components by default
 
-## Guidelines for AI Assistants
+### Naming
+- **Files:** kebab-case (`user-profile.tsx`)
+- **Components:** PascalCase (`UserProfile`)
+- **Functions:** camelCase (`getUserById`)
+- **Constants:** UPPER_SNAKE_CASE (`MAX_FILE_SIZE`)
 
-### CRITICAL RULES
+### Git Workflow
+- **Branch:** `feature/epic-X-story-Y`
+- **Commit:**
+  ```
+  feat(auth): add phone OTP for Israeli market
 
-1. **ALWAYS run lint and typecheck** after completing changes:
+  - Implement normalizeIsraeliPhone()
+  - Create verify-phone page
+  - Add SMS via Twilio
 
-   ```bash
-   npm run lint && npm run typecheck
-   ```
+  Closes #1.2
+  ```
 
-2. **NEVER start the dev server yourself**
+### Hebrew/RTL Rules
+```tsx
+// ✅ Correct
+<div className="ps-4 pe-2 ms-auto" dir="rtl">
+<div className="flex flex-row text-start">
 
-   - If you need dev server output, ask the user to provide it
-   - Don't run `npm run dev` or `pnpm dev`
+// ❌ Wrong
+<div className="pl-4 pr-2 ml-auto">
+<div className="text-left">
+```
 
-3. **Use OpenRouter, NOT OpenAI directly**
+---
 
-   - Import from `@openrouter/ai-sdk-provider`
-   - Use `openrouter()` function, not `openai()`
-   - Model names follow OpenRouter format: `provider/model-name`
+## CRITICAL BOILERPLATE RULES
 
-4. **Styling Guidelines**
+### 1. ALWAYS run after changes:
+```bash
+pnpm lint && pnpm typecheck
+```
 
-   - Stick to standard Tailwind CSS utility classes
-   - Use shadcn/ui color tokens (e.g., `bg-background`, `text-foreground`)
-   - Avoid custom colors unless explicitly requested
-   - Support dark mode with appropriate Tailwind classes
+### 2. NEVER start dev server yourself
+Ask user to provide output if needed.
 
-5. **Authentication**
+### 3. Use OpenRouter, NOT OpenAI
+```typescript
+// ✅ Correct
+import { openrouter } from "@openrouter/ai-sdk-provider";
 
-   - Server-side: Import from `@/lib/auth` (Better Auth instance)
-   - Client-side: Import hooks from `@/lib/auth-client`
-   - Protected routes should check session in Server Components
-   - Use existing auth components from `src/components/auth/`
+// ❌ Wrong
+import { openai } from "@ai-sdk/openai";
+```
 
-6. **Database Operations**
+### 4. Auth Pattern
+**Server:**
+```typescript
+import { auth } from "@/lib/auth";
+const session = await auth.api.getSession({ headers: await headers() });
+```
 
-   - Use Drizzle ORM (imported from `@/lib/db`)
-   - Schema is defined in `@/lib/schema`
-   - Always run migrations after schema changes
-   - PostgreSQL is the database (not SQLite, MySQL, etc.)
+**Client:**
+```typescript
+import { useSession } from "@/lib/auth-client";
+const { data: session } = useSession();
+```
 
-7. **File Storage**
+### 5. Database Pattern
+```typescript
+import { db } from "@/lib/db";
+import { user } from "@/lib/schema";
 
-   - Use the storage abstraction from `@/lib/storage`
-   - Automatically uses local storage (dev) or Vercel Blob (production)
-   - Import: `import { upload, deleteFile } from "@/lib/storage"`
-   - Example: `const result = await upload(buffer, "avatar.png", "avatars")`
-   - Storage switches based on `BLOB_READ_WRITE_TOKEN` environment variable
+await db.select().from(user);
+```
 
-8. **Component Creation**
+### 6. File Storage
+```typescript
+import { upload, deleteFile } from "@/lib/storage";
 
-   - Use existing shadcn/ui components when possible
-   - Follow the established patterns in `src/components/ui/`
-   - Support both light and dark modes
-   - Use TypeScript with proper types
+const result = await upload(buffer, "file.png", "folder");
+await deleteFile(result.url);
+```
 
-9. **API Routes**
-   - Follow Next.js 16 App Router conventions
-   - Use Route Handlers (route.ts files)
-   - Return Response objects
-   - Handle errors appropriately
+---
 
-### Best Practices
+## Common Tasks
 
-- Read existing code patterns before creating new features
-- Maintain consistency with established file structure
-- Use the documentation files when implementing related features
-- Test changes with lint and typecheck before considering complete
-- When modifying AI functionality, refer to `docs/technical/ai/` guides
+**Add protected route:**
+```typescript
+// app/(therapist)/dashboard/page.tsx
+import { requireRole } from "@/lib/rbac";
 
-### Common Tasks
+export default async function DashboardPage() {
+  await requireRole("therapist");
+  return <div dir="rtl">...</div>;
+}
+```
 
-**Adding a new page:**
+**Database changes:**
+1. Update `schema.ts`
+2. `pnpm db:generate`
+3. `pnpm db:migrate`
 
-1. Create in `src/app/[route]/page.tsx`
-2. Use Server Components by default
-3. Add to navigation if needed
+**Add Hebrew AI message:**
+```typescript
+// app/api/ai/message-draft/route.ts
+const { text } = await generateText({
+  model: openrouter(process.env.OPENROUTER_MODEL!),
+  system: "אתה עוזר לכתיבת הודעות בעברית...",
+  prompt: "צור הודעה...",
+});
+```
 
-**Adding a new API route:**
+---
 
-1. Create in `src/app/api/[route]/route.ts`
-2. Export HTTP method handlers (GET, POST, etc.)
-3. Use proper TypeScript types
+## Common Pitfalls
 
-**Adding authentication to a page:**
+1. ❌ Using `pl-4` instead of `ps-4`
+2. ❌ Forgetting `dir="rtl"` on layouts
+3. ❌ Storing medical records
+4. ❌ Missing RBAC checks
+5. ❌ Not validating file uploads
+6. ❌ Hardcoding English text
+7. ❌ Missing privacy disclaimers
+8. ❌ Skipping phone verification
+9. ❌ Using OpenAI directly
+10. ❌ Breaking BMAD workflow
 
-1. Import auth instance: `import { auth } from "@/lib/auth"`
-2. Get session: `const session = await auth.api.getSession({ headers: await headers() })`
-3. Check session and redirect if needed
+---
 
-**Working with the database:**
+## Quick Reference
 
-1. Update schema in `src/lib/schema.ts`
-2. Generate migration: `npm run db:generate`
-3. Apply migration: `npm run db:migrate`
-4. Import `db` from `@/lib/db` to query
+**BMAD Agents:** `/architect`, `/sm`, `/dev`, `/qa`, `/po`, `/pm`, `/analyst`
 
-**Modifying AI chat:**
+**BMAD Tasks:** `*shard-doc`, `*create-next-story`, `*validate-next-story`
 
-1. Backend: `src/app/api/chat/route.ts`
-2. Frontend: `src/app/chat/page.tsx`
-3. Reference streaming docs: `docs/technical/ai/streaming.md`
-4. Remember to use OpenRouter, not direct OpenAI
+**Figma:** https://www.figma.com/make/VXHMl4iyy3KheFrNvV6QVo/Responsive-Web-Platform-UI
 
-**Working with file storage:**
+**V0 UI Reference:** `v0-ui-work/` folder
 
-1. Import storage functions: `import { upload, deleteFile } from "@/lib/storage"`
-2. Upload files: `const result = await upload(fileBuffer, "filename.png", "folder")`
-3. Delete files: `await deleteFile(result.url)`
-4. Storage automatically uses local filesystem in dev, Vercel Blob in production
-5. Local files are saved to `public/uploads/` and served at `/uploads/`
+---
 
-## Package Manager
+## 90-Day Goals
 
-This project uses **pnpm** (see `pnpm-lock.yaml`). When running commands:
+- 📊 200 therapists onboarded
+- 📊 1,000 client leads
+- 💰 30+ partner conversions
+- 💰 50+ paid subscriptions
 
-- Use `pnpm` instead of `npm` when possible
-- Scripts defined in package.json work with `pnpm run [script]`
+---
+
+## Final Notes
+
+- **Hebrew first, always**
+- **Mobile-first design**
+- **SEO matters** - therapist profiles must rank
+- **Security critical** - uploads, auth, RBAC
+- **BMAD workflow mandatory** - SM → Dev → QA
+- **Document everything**
+- **Test on real devices**
+- **Privacy by design** - no medical records
+
+**When in doubt:**
+1. Check this CLAUDE.md
+2. Read Epic in `docs/prd/`
+3. Review `docs/architecture/`
+4. Ask `/bmad-orchestrator`
+5. Use `/po` for requirements
+
+**Good luck building TherapistOS! 🚀**
