@@ -44,5 +44,5 @@
     ".next/types/**/*.ts",
     ".next/dev/types/**/*.ts"
   ],
-  "exclude": ["node_modules", "create-agentic-app", "v0-ui-work"]
+  "exclude": ["node_modules", "boilerplate", "v0-ui-work"]
 }
