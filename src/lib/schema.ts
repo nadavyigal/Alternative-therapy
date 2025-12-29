@@ -1,7 +1,13 @@
-import { pgTable, text, timestamp, boolean, index } from "drizzle-orm/pg-core";
+import { pgTable, text, timestamp, boolean, index, pgEnum } from "drizzle-orm/pg-core";
 
 // IMPORTANT! ID fields should ALWAYS use UUID types, EXCEPT the BetterAuth tables.
 
+export const userRole = pgEnum("user_role", [
+  "client",
+  "therapist",
+  "admin",
+  "partner",
+]);
 
 export const user = pgTable(
   "user",
@@ -11,6 +17,10 @@ export const user = pgTable(
     email: text("email").notNull().unique(),
     emailVerified: boolean("email_verified").default(false).notNull(),
     image: text("image"),
+    role: userRole("role").notNull().default("client"),
+    phone: text("phone"),
+    phoneVerified: boolean("phone_verified").notNull().default(false),
+    locale: text("locale").notNull().default("he"),
     createdAt: timestamp("created_at").defaultNow().notNull(),
     updatedAt: timestamp("updated_at")
       .defaultNow()

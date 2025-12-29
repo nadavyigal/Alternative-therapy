@@ -1,0 +1,45 @@
+﻿story:
+  id: "1.4"
+  epic: "Epic 1 - Foundation & Auth"
+  title: "Create role-based layouts"
+  priority: "P0"
+  estimatedHours: 3
+
+userStory: |
+  As a platform administrator
+  I want role-based layouts for therapist and admin areas
+  So that only authorized users can access those sections
+
+tasks:
+  - id: "1.4.1"
+    description: "Add therapist layout guard"
+    files: ["src/app/(therapist)/layout.tsx"]
+  - id: "1.4.2"
+    description: "Add admin layout guard"
+    files: ["src/app/(admin)/layout.tsx"]
+  - id: "1.4.3"
+    description: "Ensure RTL container in protected layouts"
+    files: ["src/app/(therapist)/layout.tsx", "src/app/(admin)/layout.tsx"]
+
+acceptanceCriteria:
+  - "Therapist layout blocks non-therapist users"
+  - "Admin layout blocks non-admin users"
+  - "Layouts render with dir='rtl'"
+  - "Unauthorized users are redirected or receive 403"
+
+technicalSpecs:
+  implementation:
+    - "Use requireRole from src/lib/rbac.ts"
+    - "Layouts are server components"
+  dependencies:
+    - "RBAC utilities (Story 1.2)"
+
+tests:
+  - "Integration test: layout guard denies wrong role"
+  - "Type check passes"
+
+definitionOfDone:
+  - "[ ] Layout guards implemented"
+  - "[ ] RTL wrapper applied"
+  - "[ ] TypeScript compiles without errors"
+  - "[ ] Story marked complete"

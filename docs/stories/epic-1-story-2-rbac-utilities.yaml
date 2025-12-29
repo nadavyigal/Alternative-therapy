@@ -1,0 +1,49 @@
+﻿story:
+  id: "1.2"
+  epic: "Epic 1 - Foundation & Auth"
+  title: "Implement RBAC utilities"
+  priority: "P0"
+  estimatedHours: 4
+
+userStory: |
+  As a platform administrator
+  I want role-based access control utilities
+  So that protected routes and APIs are restricted by user role
+
+tasks:
+  - id: "1.2.1"
+    description: "Create RBAC helpers (requireRole, hasRole)"
+    files: ["src/lib/rbac.ts"]
+  - id: "1.2.2"
+    description: "Add role checks to therapist and admin layouts"
+    files: ["src/app/(therapist)/layout.tsx", "src/app/(admin)/layout.tsx"]
+  - id: "1.2.3"
+    description: "Document RBAC usage in architecture shard"
+    files: ["docs/architecture/02-authentication-authorization.md"]
+
+acceptanceCriteria:
+  - "RBAC helpers exist in src/lib/rbac.ts"
+  - "Therapist routes enforce therapist role"
+  - "Admin routes enforce admin role"
+  - "Unauthorized access results in redirect or 403"
+  - "Role checks work in server components and API routes"
+
+technicalSpecs:
+  implementation:
+    - "Use Better Auth session access with next/headers"
+    - "Expose requireRole(role) and hasRole(userRole, allowed[])"
+  dependencies:
+    - "User role field present in schema"
+    - "Auth session available via src/lib/auth.ts"
+
+tests:
+  - "Unit test: RBAC helpers (if test harness exists)"
+  - "Integration test: protected layout denies wrong role"
+  - "Type check passes"
+
+definitionOfDone:
+  - "[ ] RBAC utilities implemented"
+  - "[ ] Layout guards enforced"
+  - "[ ] Documentation updated"
+  - "[ ] TypeScript compiles without errors"
+  - "[ ] Story marked complete"

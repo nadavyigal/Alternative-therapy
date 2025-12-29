@@ -1,0 +1,58 @@
+﻿story:
+  id: "1.1"
+  epic: "Epic 1 - Foundation & Auth"
+  title: "Extend user table with role and phone fields"
+  priority: "P0"
+  estimatedHours: 4
+
+userStory: |
+  As a platform administrator
+  I want to extend the user table with role and phone verification fields
+  So that we can implement role-based access control and Israeli phone verification
+
+tasks:
+  - id: "1.1.1"
+    description: "Update user table schema in src/lib/schema.ts"
+    files: ["src/lib/schema.ts"]
+  - id: "1.1.2"
+    description: "Generate and review database migration"
+    files: ["drizzle/migrations/*"]
+  - id: "1.1.3"
+    description: "Update TypeScript types as needed"
+    files: ["src/lib/schema.ts"]
+  - id: "1.1.4"
+    description: "Document schema updates in architecture shard"
+    files: ["docs/architecture/01-database-schema.md"]
+
+acceptanceCriteria:
+  - "User table includes role field (client, therapist, admin, partner)"
+  - "User table includes phone and phoneVerified fields"
+  - "User table includes locale field (default: 'he')"
+  - "Role defaults to client for new users"
+  - "Database migration runs successfully"
+  - "TypeScript types are correct"
+
+technicalSpecs:
+  database:
+    - "Add role ENUM column (client, therapist, admin, partner)"
+    - "Add phone VARCHAR(20) column"
+    - "Add phoneVerified BOOLEAN column"
+    - "Add locale VARCHAR(5) column default 'he'"
+  dependencies:
+    - "Drizzle ORM configured"
+    - "PostgreSQL database configured"
+  implementationNotes:
+    - "Better Auth tables use text IDs; keep ID type consistent"
+    - "Prefer explicit defaults in schema"
+
+tests:
+  - "Unit test: Schema validation (if present)"
+  - "Integration test: Database migration"
+  - "Type check passes"
+
+definitionOfDone:
+  - "[ ] Schema updated and reviewed"
+  - "[ ] Migration generated and reviewed"
+  - "[ ] Migration runs successfully"
+  - "[ ] TypeScript compiles without errors"
+  - "[ ] Story marked complete"

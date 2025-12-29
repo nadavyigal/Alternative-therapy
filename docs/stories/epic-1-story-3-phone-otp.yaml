@@ -1,0 +1,52 @@
+﻿story:
+  id: "1.3"
+  epic: "Epic 1 - Foundation & Auth"
+  title: "Create phone OTP verification service"
+  priority: "P0"
+  estimatedHours: 6
+
+userStory: |
+  As a therapist
+  I want to verify my Israeli phone number via OTP
+  So that my account can be activated securely
+
+tasks:
+  - id: "1.3.1"
+    description: "Create phone verification utility functions"
+    files: ["src/lib/phone-verification.ts"]
+  - id: "1.3.2"
+    description: "Implement phone normalization to +972 format"
+    files: ["src/lib/phone-verification.ts"]
+  - id: "1.3.3"
+    description: "Add OTP send and verify functions (mock or provider)"
+    files: ["src/lib/phone-verification.ts"]
+  - id: "1.3.4"
+    description: "Document phone verification flow"
+    files: ["docs/architecture/02-authentication-authorization.md"]
+
+acceptanceCriteria:
+  - "Phone normalization converts 05XXXXXXXX to +972-5X-XXX-XXXX"
+  - "OTP can be sent and verified (mock if provider missing)"
+  - "Phone verification required for therapist role"
+  - "Errors are handled for invalid numbers"
+
+technicalSpecs:
+  implementation:
+    - "Expose normalizeIsraeliPhone(input)"
+    - "Expose sendOtp(phone) and verifyOtp(phone, code)"
+    - "Store verification state on user.phoneVerified"
+  dependencies:
+    - "User phone fields added in schema"
+    - "SMS provider config optional (Twilio or mock)"
+
+tests:
+  - "Unit test: phone normalization"
+  - "Unit test: OTP verification flow (mock)"
+  - "Type check passes"
+
+definitionOfDone:
+  - "[ ] Phone verification utilities implemented"
+  - "[ ] Normalization works for Israeli numbers"
+  - "[ ] Documentation updated"
+  - "[ ] TypeScript compiles without errors"
+  - "[ ] Story marked complete"

@@ -10,7 +10,7 @@ import { Progress } from "@/components/ui/progress"
 import { CheckCircle2, Upload, X } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
 
-const STEPS = ["פרטים אישיים", "תחומי טיפול וקהל יעד", "מיקום ושפות", "מסמכים ואימות", "סיום והתחלה"]
+const STEPS = ["????? ??????", "????? ?????", "????? ????? ???? ???", "????? ?????", "?????? ???????", "????"]
 
 export default function OnboardingPage() {
   const router = useRouter()
@@ -18,6 +18,8 @@ export default function OnboardingPage() {
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
+    phone: "",
+    phoneVerified: false,
     title: "",
     experience: "",
     profileImage: null as File | null,
@@ -30,8 +32,17 @@ export default function OnboardingPage() {
     languages: [] as string[],
     documents: [] as Array<{ file: File; name: string; type: string; issuer: string; date: string }>,
   })
+  const [otpCode, setOtpCode] = useState("")
+  const [otpStatus, setOtpStatus] = useState<
+    "idle" | "sending" | "sent" | "verifying" | "verified" | "error"
+  >("idle")
+  const [otpError, setOtpError] = useState<string | null>(null)
 
   const handleNext = () => {
+    if (currentStep === 1 && !formData.phoneVerified) {
+      setOtpError("?? ???? ?? ???? ?????? ??? ??????.")
+      return
+    }
     if (currentStep < STEPS.length - 1) {
       setCurrentStep(currentStep + 1)
     } else {
@@ -51,6 +62,55 @@ export default function OnboardingPage() {
       setFormData({ ...formData, [key]: array.filter((item) => item !== value) })
     } else {
       setFormData({ ...formData, [key]: [...array, value] })
+    }
+  }
+
+  const handleSendOtp = async () => {
+    setOtpError(null)
+    setOtpStatus("sending")
+
+    try {
+      const response = await fetch("/api/phone-verification/send", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ phone: formData.phone }),
+      })
+      const data = await response.json().catch(() => null)
+
+      if (!response.ok) {
+        throw new Error(data?.error ?? "SEND_FAILED")
+      }
+
+      setFormData((prev) => ({ ...prev, phone: data?.phone ?? prev.phone, phoneVerified: false }))
+      setOtpCode("")
+      setOtpStatus("sent")
+    } catch {
+      setOtpStatus("error")
+      setOtpError("?? ?????? ????? ???. ??? ???.")
+    }
+  }
+
+  const handleVerifyOtp = async () => {
+    setOtpError(null)
+    setOtpStatus("verifying")
+
+    try {
+      const response = await fetch("/api/phone-verification/verify", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ phone: formData.phone, code: otpCode }),
+      })
+      const data = await response.json().catch(() => null)
+
+      if (!response.ok || !data?.verified) {
+        throw new Error(data?.error ?? "INVALID_OTP")
+      }
+
+      setFormData((prev) => ({ ...prev, phone: data?.phone ?? prev.phone, phoneVerified: true }))
+      setOtpStatus("verified")
+    } catch {
+      setOtpStatus("error")
+      setOtpError("??? ?? ???? ?? ??? ?????.")
     }
   }
 
@@ -93,10 +153,11 @@ export default function OnboardingPage() {
             <div className="bg-teal-50 border border-teal-200 rounded-xl p-6 sticky top-8">
               <h3 className="font-bold text-teal-900 mb-3">
                 {currentStep === 0 && "זה מה שהמטופלים יראו עליך ראשונים"}
-                {currentStep === 1 && "עזרו למטופלים למצוא אתכם"}
-                {currentStep === 2 && "היכן ובאילו שפות אתם מטפלים"}
-                {currentStep === 3 && "אימות מקצועי"}
-                {currentStep === 4 && "הפרופיל שלך מוכן!"}
+                {currentStep === 1 && "?????? ???? ????? ??? ?????? ?? ??????"}
+                {currentStep === 2 && "עזרו למטופלים למצוא אתכם"}
+                {currentStep === 3 && "היכן ובאילו שפות אתם מטפלים"}
+                {currentStep === 4 && "אימות מקצועי"}
+                {currentStep === 5 && "הפרופיל שלך מוכן!"}
               </h3>
               <ul className="space-y-2 text-sm text-teal-800">
                 {currentStep === 0 && (
@@ -118,6 +179,22 @@ export default function OnboardingPage() {
                 {currentStep === 1 && (
                   <>
                     <li className="flex gap-2">
+                      <span>?</span>
+                      <span>???? ??? ????? ?-SMS ????? ???</span>
+                    </li>
+                    <li className="flex gap-2">
+                      <span>?</span>
+                      <span>????? ???? ???? ????? ??????</span>
+                    </li>
+                    <li className="flex gap-2">
+                      <span>?</span>
+                      <span>???? ???? ??? ??? ?? ????</span>
+                    </li>
+                  </>
+                )}
+                {currentStep === 2 && (
+                  <>
+                    <li className="flex gap-2">
                       <span>•</span>
                       <span>בחרו תחומי טיפול רלוונטיים</span>
                     </li>
@@ -131,7 +208,7 @@ export default function OnboardingPage() {
                     </li>
                   </>
                 )}
-                {currentStep === 2 && (
+                {currentStep === 3 && (
                   <>
                     <li className="flex gap-2">
                       <span>•</span>
@@ -147,7 +224,7 @@ export default function OnboardingPage() {
                     </li>
                   </>
                 )}
-                {currentStep === 3 && (
+                {currentStep === 4 && (
                   <>
                     <li className="flex gap-2">
                       <span>•</span>
@@ -163,7 +240,7 @@ export default function OnboardingPage() {
                     </li>
                   </>
                 )}
-                {currentStep === 4 && (
+                {currentStep === 5 && (
                   <>
                     <li className="flex gap-2">
                       <span>•</span>
@@ -257,8 +334,74 @@ export default function OnboardingPage() {
                 </div>
               )}
 
-              {/* Step 2: Specialties */}
+              {/* Step 2: Phone Verification */}
               {currentStep === 1 && (
+                <div className="space-y-6">
+                  <h2 className="text-xl font-bold mb-6">????? ???? ?????</h2>
+                  <div className="space-y-2">
+                    <Label htmlFor="phone">???? ?????</Label>
+                    <Input
+                      id="phone"
+                      placeholder="050-123-4567"
+                      value={formData.phone}
+                      onChange={(e) => {
+                        const value = e.target.value
+                        setFormData((prev) => ({
+                          ...prev,
+                          phone: value,
+                          phoneVerified: false,
+                        }))
+                        setOtpStatus("idle")
+                        setOtpError(null)
+                      }}
+                      className="text-right"
+                    />
+                    <p className="text-sm text-muted-foreground">
+                      ???? ???? ??? ????? ?-SMS ??? ??????.
+                    </p>
+                  </div>
+
+                  <div className="flex flex-wrap items-center gap-3">
+                    <Button
+                      type="button"
+                      onClick={handleSendOtp}
+                      disabled={!formData.phone || otpStatus === "sending" || otpStatus === "verifying" || formData.phoneVerified}
+                    >
+                      {otpStatus === "sending" ? "????..." : "??? ??? ?????"}
+                    </Button>
+                    {formData.phoneVerified && (
+                      <span className="text-sm text-teal-700">???? ?????? ????.</span>
+                    )}
+                  </div>
+
+                  {(otpStatus === "sent" || otpStatus === "verifying" || otpStatus === "error") && !formData.phoneVerified && (
+                    <div className="space-y-2">
+                      <Label htmlFor="otpCode">??? ?????</Label>
+                      <Input
+                        id="otpCode"
+                        value={otpCode}
+                        onChange={(e) => setOtpCode(e.target.value)}
+                        inputMode="numeric"
+                        autoComplete="one-time-code"
+                        className="text-right"
+                      />
+                      <Button
+                        type="button"
+                        onClick={handleVerifyOtp}
+                        disabled={!otpCode || otpStatus === "verifying"}
+                      >
+                        {otpStatus === "verifying" ? "????..." : "??? ???"}
+                      </Button>
+                    </div>
+                  )}
+
+                  {otpError && (
+                    <p className="text-sm text-destructive">{otpError}</p>
+                  )}
+                </div>
+              )}
+              {/* Step 3: Specialties */}
+              {currentStep === 2 && (
                 <div className="space-y-6">
                   <h2 className="text-xl font-bold mb-6">תחומי טיפול וקהל יעד</h2>
 
@@ -323,8 +466,8 @@ export default function OnboardingPage() {
                 </div>
               )}
 
-              {/* Step 3: Location */}
-              {currentStep === 2 && (
+              {/* Step 4: Location */}
+              {currentStep === 3 && (
                 <div className="space-y-6">
                   <h2 className="text-xl font-bold mb-6">מיקום ושפות</h2>
 
@@ -399,8 +542,8 @@ export default function OnboardingPage() {
                 </div>
               )}
 
-              {/* Step 4: Documents */}
-              {currentStep === 3 && (
+              {/* Step 5: Documents */}
+              {currentStep === 4 && (
                 <div className="space-y-6">
                   <h2 className="text-xl font-bold mb-6">מסמכים ואימות</h2>
 
@@ -475,8 +618,8 @@ export default function OnboardingPage() {
                 </div>
               )}
 
-              {/* Step 5: Complete */}
-              {currentStep === 4 && (
+              {/* Step 6: Complete */}
+              {currentStep === 5 && (
                 <div className="text-center py-8 space-y-6">
                   <div className="w-20 h-20 rounded-full bg-teal-100 flex items-center justify-center mx-auto">
                     <CheckCircle2 className="w-10 h-10 text-teal-600" />
@@ -518,7 +661,7 @@ export default function OnboardingPage() {
                     </Button>
                   )}
                   {currentStep < STEPS.length - 1 && (
-                    <Button type="button" variant="ghost" className="text-muted-foreground">
+                    <Button type="button" variant="ghost" className="text-muted-foreground" disabled={currentStep === 1}>
                       שמירה ויציאה
                     </Button>
                   )}
