@@ -1,108 +1,48 @@
-import { Geist, Geist_Mono } from "next/font/google";
-import "./globals.css";
-import { SiteFooter } from "@/components/site-footer";
-import { SiteHeader } from "@/components/site-header";
-import { ThemeProvider } from "@/components/theme-provider";
-import { Toaster } from "@/components/ui/sonner";
-import type { Metadata } from "next";
+import type React from "react"
+import type { Metadata } from "next"
+import { Rubik } from "next/font/google"
+import { Analytics } from "@vercel/analytics/next"
+import "./globals.css"
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
+const rubik = Rubik({
+  subsets: ["hebrew", "latin"],
+  weight: ["400", "500", "600", "700"],
+})
 
 export const metadata: Metadata = {
-  title: {
-    default: "Agentic Coding Boilerplate",
-    template: "%s | Agentic Coding Boilerplate",
+  title: "פלטפורמה למטפלים - ניהול פרקטיקה פשוט ויעיל",
+  description: "פלטפורמה אחת למטפלים – לקוחות, ביטוח, פנסיה ומס",
+  generator: "v0.app",
+  icons: {
+    icon: [
+      {
+        url: "/icon-light-32x32.png",
+        media: "(prefers-color-scheme: light)",
+      },
+      {
+        url: "/icon-dark-32x32.png",
+        media: "(prefers-color-scheme: dark)",
+      },
+      {
+        url: "/icon.svg",
+        type: "image/svg+xml",
+      },
+    ],
+    apple: "/apple-icon.png",
   },
-  description:
-    "Complete agentic coding boilerplate with authentication, database, AI integration, and modern tooling - perfect for building AI-powered applications and autonomous agents by Leon van Zyl",
-  keywords: [
-    "Next.js",
-    "React",
-    "TypeScript",
-    "AI",
-    "OpenRouter",
-    "Boilerplate",
-    "Authentication",
-    "PostgreSQL",
-  ],
-  authors: [{ name: "Leon van Zyl" }],
-  creator: "Leon van Zyl",
-  openGraph: {
-    type: "website",
-    locale: "en_US",
-    siteName: "Agentic Coding Boilerplate",
-    title: "Agentic Coding Boilerplate",
-    description:
-      "Complete agentic coding boilerplate with authentication, database, AI integration, and modern tooling",
-  },
-  twitter: {
-    card: "summary_large_image",
-    title: "Agentic Coding Boilerplate",
-    description:
-      "Complete agentic coding boilerplate with authentication, database, AI integration, and modern tooling",
-  },
-  robots: {
-    index: true,
-    follow: true,
-  },
-};
-
-// JSON-LD structured data for SEO
-const jsonLd = {
-  "@context": "https://schema.org",
-  "@type": "WebApplication",
-  name: "Agentic Coding Boilerplate",
-  description:
-    "Complete agentic coding boilerplate with authentication, database, AI integration, and modern tooling",
-  applicationCategory: "DeveloperApplication",
-  operatingSystem: "Any",
-  offers: {
-    "@type": "Offer",
-    price: "0",
-    priceCurrency: "USD",
-  },
-  author: {
-    "@type": "Person",
-    name: "Leon van Zyl",
-  },
-};
+}
 
 export default function RootLayout({
   children,
 }: Readonly<{
-  children: React.ReactNode;
+  children: React.ReactNode
 }>) {
   return (
-    <html lang="en" suppressHydrationWarning>
-      <head>
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
-        />
-      </head>
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      >
-        <ThemeProvider
-          attribute="class"
-          defaultTheme="system"
-          enableSystem
-          disableTransitionOnChange
-        >
-          <SiteHeader />
-          <main id="main-content">{children}</main>
-          <SiteFooter />
-          <Toaster richColors position="top-right" />
-        </ThemeProvider>
+    <html lang="he" dir="rtl">
+      <body className={`${rubik.className} font-sans antialiased`}>
+        {children}
+        <Analytics />
       </body>
     </html>
-  );
+  )
 }

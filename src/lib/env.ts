@@ -5,13 +5,14 @@ import { z } from "zod";
  * These variables are only available on the server.
  */
 const serverEnvSchema = z.object({
-  // Database
-  POSTGRES_URL: z.string().url("Invalid database URL"),
+  // Database - use fallback for development UI preview
+  POSTGRES_URL: z.string().url("Invalid database URL").default("postgresql://localhost:5432/therapistos_dev"),
 
-  // Authentication
+  // Authentication - use fallback for development UI preview
   BETTER_AUTH_SECRET: z
     .string()
-    .min(32, "BETTER_AUTH_SECRET must be at least 32 characters"),
+    .min(32, "BETTER_AUTH_SECRET must be at least 32 characters")
+    .default("dev-secret-key-for-ui-preview-only-change-in-production"),
 
   // OAuth
   GOOGLE_CLIENT_ID: z.string().optional(),
@@ -19,7 +20,7 @@ const serverEnvSchema = z.object({
 
   // AI
   OPENROUTER_API_KEY: z.string().optional(),
-  OPENROUTER_MODEL: z.string().default("openai/gpt-5-mini"),
+  OPENROUTER_MODEL: z.string().default("openai/gpt-4o-mini"),
 
   // Storage
   BLOB_READ_WRITE_TOKEN: z.string().optional(),
@@ -86,13 +87,20 @@ export function getClientEnv(): ClientEnv {
 export function checkEnv(): void {
   const warnings: string[] = [];
 
+  // In development, allow fallback values
+  const isDev = process.env.NODE_ENV === "development";
+
   // Check required variables
-  if (!process.env.POSTGRES_URL) {
+  if (!process.env.POSTGRES_URL && !isDev) {
     throw new Error("POSTGRES_URL is required");
+  } else if (!process.env.POSTGRES_URL && isDev) {
+    warnings.push("POSTGRES_URL not set. Using fallback (database features will not work).");
   }
 
-  if (!process.env.BETTER_AUTH_SECRET) {
+  if (!process.env.BETTER_AUTH_SECRET && !isDev) {
     throw new Error("BETTER_AUTH_SECRET is required");
+  } else if (!process.env.BETTER_AUTH_SECRET && isDev) {
+    warnings.push("BETTER_AUTH_SECRET not set. Using fallback (authentication will not work).");
   }
 
   // Check optional variables and warn
@@ -109,9 +117,9 @@ export function checkEnv(): void {
   }
 
   // Log warnings in development
-  if (process.env.NODE_ENV === "development" && warnings.length > 0) {
-    console.warn("\n⚠️  Environment warnings:");
+  if (isDev && warnings.length > 0) {
+    console.warn("\n⚠️  Environment warnings (UI preview mode):");
     warnings.forEach((w) => console.warn(`   - ${w}`));
-    console.warn("");
+    console.warn("\n   💡 Create .env.local file to enable full functionality.\n");
   }
 }

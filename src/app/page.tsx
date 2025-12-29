@@ -1,174 +1,202 @@
-"use client";
+import Link from "next/link"
+import { Button } from "@/components/ui/button"
+import { Shield, Users, FileCheck } from "lucide-react"
 
-import Link from "next/link";
-import { Video, Shield, Database, Palette, Bot } from "lucide-react";
-import { SetupChecklist } from "@/components/setup-checklist";
-import { StarterPromptModal } from "@/components/starter-prompt-modal";
-import { Button } from "@/components/ui/button";
-import { useDiagnostics } from "@/hooks/use-diagnostics";
-
-export default function Home() {
-  const { isAuthReady, isAiReady, loading } = useDiagnostics();
+export default function TherapistLanding() {
   return (
-    <main className="flex-1 container mx-auto px-4 py-12">
-      <div className="max-w-4xl mx-auto text-center space-y-8">
-        <div className="space-y-4">
-          <div className="flex items-center justify-center gap-3 mb-2">
-            <div className="flex items-center justify-center w-12 h-12 rounded-xl bg-primary/10">
-              <Bot className="h-7 w-7 text-primary" />
+    <div dir="rtl" className="min-h-screen bg-background">
+      {/* Header */}
+      <header className="border-b border-border">
+        <div className="container mx-auto px-4 py-4">
+          <nav className="flex items-center justify-between">
+            <div className="flex items-center gap-8">
+              <Link href="/login" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+                התחברות
+              </Link>
+              <Link href="#therapists" className="text-sm font-medium">
+                למטפלים
+              </Link>
+              <Link href="#patients" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+                למטופלים
+              </Link>
             </div>
-            <h1 className="text-5xl font-bold tracking-tight bg-gradient-to-r from-primary via-primary/90 to-primary/70 bg-clip-text text-transparent">
-              Starter Kit
+            <div className="text-2xl font-bold text-primary">פלטפורמה</div>
+          </nav>
+        </div>
+      </header>
+
+      {/* Hero Section */}
+      <section className="container mx-auto px-4 py-20">
+        <div className="grid lg:grid-cols-2 gap-12 items-center">
+          <div className="space-y-6">
+            <h1 className="text-5xl font-bold leading-tight text-balance">
+              פלטפורמה אחת למטפלים – לקוחות, ביטוח, פנסיה ומס
             </h1>
+            <p className="text-lg text-muted-foreground leading-relaxed">
+              קבלו יותר מטופלים מתאימים, נהלו את כל הצרכים האדמיניסטרטיביים במקום אחד, והתמקדו במה שחשוב באמת – הטיפול.
+            </p>
+            <div className="flex gap-4">
+              <Button asChild size="lg" className="text-base">
+                <Link href="/signup">הצטרפות מטפלים</Link>
+              </Button>
+              <Button asChild variant="outline" size="lg" className="text-base bg-transparent">
+                <Link href="/login">כניסה למטפלים</Link>
+              </Button>
+            </div>
           </div>
-          <h2 className="text-2xl font-semibold text-muted-foreground">
-            Complete Boilerplate for AI Applications
-          </h2>
-          <p className="text-xl text-muted-foreground">
-            A complete agentic coding boilerplate with authentication, database, AI
-            integration, and modern tooling for building AI-powered applications
-          </p>
-        </div>
 
-        {/* YouTube Tutorial Video */}
-        <div className="space-y-4">
-          <h3 className="text-2xl font-semibold flex items-center justify-center gap-2">
-            <Video className="h-6 w-6" />
-            Video Tutorial
-          </h3>
-          <p className="text-muted-foreground">
-            Watch the complete walkthrough of this agentic coding boilerplate:
-          </p>
-          <div className="relative w-full max-w-3xl mx-auto">
-            <div className="relative pb-[56.25%] h-0 overflow-hidden rounded-lg border">
-              <iframe
-                className="absolute top-0 left-0 w-full h-full"
-                src="https://www.youtube.com/embed/JQ86N3WOAh4"
-                title="Agentic Coding Boilerplate Tutorial"
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                allowFullScreen
-              />
+          {/* Dashboard Preview */}
+          <div className="bg-card border border-border rounded-xl p-6 shadow-lg">
+            <div className="space-y-4">
+              <div className="flex items-center gap-3 pb-4 border-b border-border">
+                <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
+                  <span className="text-lg font-bold text-primary">ד.כ</span>
+                </div>
+                <div>
+                  <div className="font-semibold">ד״ר כהן מיכל</div>
+                  <div className="text-sm text-teal-600 flex items-center gap-1">
+                    <Shield className="w-3 h-3" />
+                    <span>מאומת</span>
+                  </div>
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <div className="text-sm font-medium text-muted-foreground">פניות ממתינות</div>
+                {[1, 2, 3].map((i) => (
+                  <div key={i} className="flex items-center justify-between p-3 bg-muted/50 rounded-lg">
+                    <div className="space-y-1">
+                      <div className="font-medium text-sm">שרה לוי</div>
+                      <div className="text-xs text-muted-foreground">טיפול בחרדה</div>
+                    </div>
+                    <div className="text-xs bg-teal-100 text-teal-700 px-2 py-1 rounded">חדש</div>
+                  </div>
+                ))}
+              </div>
+
+              <div className="p-3 bg-teal-50 border border-teal-200 rounded-lg">
+                <div className="text-sm font-medium text-teal-900">שירותים אדמיניסטרטיביים</div>
+                <div className="text-xs text-teal-700 mt-1">ביטוח • פנסיה • מס</div>
+              </div>
             </div>
           </div>
         </div>
+      </section>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mt-12">
-          <div className="p-6 border rounded-lg">
-            <h3 className="font-semibold mb-2 flex items-center gap-2">
-              <Shield className="h-4 w-4" />
-              Authentication
-            </h3>
-            <p className="text-sm text-muted-foreground">
-              Better Auth with Google OAuth integration
-            </p>
-          </div>
-          <div className="p-6 border rounded-lg">
-            <h3 className="font-semibold mb-2 flex items-center gap-2">
-              <Database className="h-4 w-4" />
-              Database
-            </h3>
-            <p className="text-sm text-muted-foreground">
-              Drizzle ORM with PostgreSQL setup
-            </p>
-          </div>
-          <div className="p-6 border rounded-lg">
-            <h3 className="font-semibold mb-2 flex items-center gap-2">
-              <Bot className="h-4 w-4" />
-              AI Ready
-            </h3>
-            <p className="text-sm text-muted-foreground">
-              Vercel AI SDK with OpenRouter integration
-            </p>
-          </div>
-          <div className="p-6 border rounded-lg">
-            <h3 className="font-semibold mb-2 flex items-center gap-2">
-              <Palette className="h-4 w-4" />
-              UI Components
-            </h3>
-            <p className="text-sm text-muted-foreground">
-              shadcn/ui with Tailwind CSS
-            </p>
-          </div>
-        </div>
-
-        <div className="space-y-6 mt-12">
-          <SetupChecklist />
-
-          <h3 className="text-2xl font-semibold">Next Steps</h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-left">
-            <div className="p-4 border rounded-lg">
-              <h4 className="font-medium mb-2">
-                1. Set up environment variables
-              </h4>
-              <p className="text-sm text-muted-foreground mb-2">
-                Copy <code>.env.example</code> to <code>.env.local</code> and
-                configure:
-              </p>
-              <ul className="text-sm text-muted-foreground space-y-1 list-disc list-inside">
-                <li>POSTGRES_URL (PostgreSQL connection string)</li>
-                <li>GOOGLE_CLIENT_ID (OAuth credentials)</li>
-                <li>GOOGLE_CLIENT_SECRET (OAuth credentials)</li>
-                <li>OPENROUTER_API_KEY (for AI functionality)</li>
+      {/* Benefits Section */}
+      <section className="bg-muted/30 py-20">
+        <div className="container mx-auto px-4">
+          <div className="grid md:grid-cols-3 gap-8">
+            <div className="space-y-4">
+              <div className="w-12 h-12 rounded-lg bg-teal-100 flex items-center justify-center">
+                <Users className="w-6 h-6 text-teal-700" />
+              </div>
+              <h3 className="text-xl font-bold">יותר מטופלים מתאימים</h3>
+              <ul className="space-y-2 text-muted-foreground">
+                <li className="flex items-start gap-2">
+                  <span className="text-teal-600 mt-1">•</span>
+                  <span>התאמה אוטומטית לפי תחום ומיקום</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <span className="text-teal-600 mt-1">•</span>
+                  <span>ניהול פניות ממוקד במקום אחד</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <span className="text-teal-600 mt-1">•</span>
+                  <span>מעקב אחר סטטוס כל פנייה</span>
+                </li>
               </ul>
             </div>
-            <div className="p-4 border rounded-lg">
-              <h4 className="font-medium mb-2">2. Set up your database</h4>
-              <p className="text-sm text-muted-foreground mb-2">
-                Run database migrations:
-              </p>
-              <div className="space-y-2">
-                <code className="text-sm bg-muted p-2 rounded block">
-                  npm run db:generate
-                </code>
-                <code className="text-sm bg-muted p-2 rounded block">
-                  npm run db:migrate
-                </code>
+
+            <div className="space-y-4">
+              <div className="w-12 h-12 rounded-lg bg-orange-100 flex items-center justify-center">
+                <Shield className="w-6 h-6 text-orange-700" />
               </div>
+              <h3 className="text-xl font-bold">שקט אדמיניסטרטיבי</h3>
+              <ul className="space-y-2 text-muted-foreground">
+                <li className="flex items-start gap-2">
+                  <span className="text-orange-600 mt-1">•</span>
+                  <span>בקשות לביטוח אחריות מקצועית</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <span className="text-orange-600 mt-1">•</span>
+                  <span>התאמת פנסיה וקרנות השתלמות</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <span className="text-orange-600 mt-1">•</span>
+                  <span>סיוע בדיווח שנתי למס הכנסה</span>
+                </li>
+              </ul>
             </div>
-            <div className="p-4 border rounded-lg">
-              <h4 className="font-medium mb-2">3. Try the features</h4>
-              <div className="space-y-2">
-                {loading || !isAuthReady ? (
-                  <Button size="sm" className="w-full" disabled={true}>
-                    View Dashboard
-                  </Button>
-                ) : (
-                  <Button asChild size="sm" className="w-full">
-                    <Link href="/dashboard">View Dashboard</Link>
-                  </Button>
-                )}
-                {loading || !isAiReady ? (
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className="w-full"
-                    disabled={true}
-                  >
-                    Try AI Chat
-                  </Button>
-                ) : (
-                  <Button
-                    asChild
-                    variant="outline"
-                    size="sm"
-                    className="w-full"
-                  >
-                    <Link href="/chat">Try AI Chat</Link>
-                  </Button>
-                )}
+
+            <div className="space-y-4">
+              <div className="w-12 h-12 rounded-lg bg-teal-100 flex items-center justify-center">
+                <FileCheck className="w-6 h-6 text-teal-700" />
               </div>
-            </div>
-            <div className="p-4 border rounded-lg">
-              <h4 className="font-medium mb-2">4. Start building</h4>
-              <p className="text-sm text-muted-foreground mb-3">
-                Customize the components, add your own pages, and build your
-                application on top of this solid foundation.
-              </p>
-              <StarterPromptModal />
+              <h3 className="text-xl font-bold">תמונה אחת של כל מה שקורה</h3>
+              <ul className="space-y-2 text-muted-foreground">
+                <li className="flex items-start gap-2">
+                  <span className="text-teal-600 mt-1">•</span>
+                  <span>דשבורד מרכזי לכל הפעילות</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <span className="text-teal-600 mt-1">•</span>
+                  <span>חיבור לחשבונית ירוקה</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <span className="text-teal-600 mt-1">•</span>
+                  <span>דוחות והתראות אוטומטיות</span>
+                </li>
+              </ul>
             </div>
           </div>
         </div>
-      </div>
-    </main>
-  );
+      </section>
+
+      {/* How it Works */}
+      <section className="py-20">
+        <div className="container mx-auto px-4">
+          <h2 className="text-3xl font-bold text-center mb-12">איך זה עובד למטפלים</h2>
+          <div className="grid md:grid-cols-4 gap-6">
+            {[
+              { step: "1", title: "פותחים פרופיל", desc: "הרשמה מהירה והעלאת תעודות מקצועיות" },
+              { step: "2", title: "מקבלים פניות", desc: "מטופלים מתאימים מגיעים אליכם אוטומטית" },
+              { step: "3", title: "מבקשים סיוע", desc: "ביטוח, פנסיה ומס במקום אחד" },
+              { step: "4", title: "ממשיכים לטפל בשקט", desc: "התמקדות בטיפול, אנחנו דואגים לשאר" },
+            ].map((item) => (
+              <div key={item.step} className="relative">
+                <div className="bg-card border border-border rounded-xl p-6 space-y-3">
+                  <div className="w-10 h-10 rounded-full bg-teal-100 text-teal-700 font-bold text-lg flex items-center justify-center">
+                    {item.step}
+                  </div>
+                  <h3 className="font-bold text-lg">{item.title}</h3>
+                  <p className="text-sm text-muted-foreground leading-relaxed">{item.desc}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Footer */}
+      <footer className="border-t border-border py-8">
+        <div className="container mx-auto px-4">
+          <div className="flex justify-center gap-8 text-sm text-muted-foreground">
+            <Link href="#" className="hover:text-foreground transition-colors">
+              תנאי שימוש
+            </Link>
+            <Link href="#" className="hover:text-foreground transition-colors">
+              פרטיות
+            </Link>
+            <Link href="#" className="hover:text-foreground transition-colors">
+              תמיכה
+            </Link>
+            <Link href="#" className="hover:text-foreground transition-colors">
+              יצירת קשר
+            </Link>
+          </div>
+        </div>
+      </footer>
+    </div>
+  )
 }
