@@ -2,8 +2,53 @@ services:
   postgres:
     image: pgvector/pgvector:pg18
     environment:
-      POSTGRES_DB: postgres_dev
-      POSTGRES_USER: dev_user
-      POSTGRES_PASSWORD: dev_password
+      POSTGRES_DB: ${POSTGRES_DB:-postgres_dev}
+      POSTGRES_USER: ${POSTGRES_USER:-dev_user}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-dev_password}
     ports:
-      - "5432:5432"
+      - "${POSTGRES_PORT:-5432}:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "${REDIS_PORT:-6379}:6379"
+    command: ["redis-server", "--appendonly", "yes"]
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+  worker:
+    build:
+      context: ./services/worker
+    environment:
+      REDIS_URL: ${REDIS_URL:-redis://redis:6379}
+      WORKER_PORT: ${WORKER_PORT:-4001}
+      WORKER_QUEUE_NAME: ${WORKER_QUEUE_NAME:-therapistos-jobs}
+      WORKER_CONCURRENCY: ${WORKER_CONCURRENCY:-5}
+      WORKER_JOB_ATTEMPTS: ${WORKER_JOB_ATTEMPTS:-3}
+      WORKER_JOB_BACKOFF_MS: ${WORKER_JOB_BACKOFF_MS:-5000}
+      WORKER_API_TOKEN: ${WORKER_API_TOKEN:-}
+      WORKER_LOG_LEVEL: ${WORKER_LOG_LEVEL:-info}
+    ports:
+      - "${WORKER_PORT:-4001}:4001"
+    depends_on:
+      redis:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:4001/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  postgres_data:
+  redis_data:

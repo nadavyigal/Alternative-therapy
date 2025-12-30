@@ -12,13 +12,15 @@ cp env.example .env
 pnpm dev
 ```
 
-If you need the full stack (database + auth):
+If you need the full stack (database + redis + worker):
 
 ```bash
 docker compose up -d
 pnpm db:migrate
 pnpm dev
 ```
+
+Worker service listens on `http://localhost:4001` and accepts job requests via HTTP.
 
 ## Docs
 
