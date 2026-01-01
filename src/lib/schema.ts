@@ -1,4 +1,14 @@
-import { pgTable, text, timestamp, boolean, index, pgEnum } from "drizzle-orm/pg-core";
+import {
+  pgTable,
+  text,
+  timestamp,
+  boolean,
+  index,
+  pgEnum,
+  uuid,
+  integer,
+  unique,
+} from "drizzle-orm/pg-core";
 
 // IMPORTANT! ID fields should ALWAYS use UUID types, EXCEPT the BetterAuth tables.
 
@@ -7,6 +17,12 @@ export const userRole = pgEnum("user_role", [
   "therapist",
   "admin",
   "partner",
+]);
+
+export const credentialStatus = pgEnum("credential_status", [
+  "pending",
+  "approved",
+  "rejected",
 ]);
 
 export const user = pgTable(
@@ -29,6 +45,104 @@ export const user = pgTable(
   },
   (table) => [index("user_email_idx").on(table.email)]
 );
+
+export const therapistProfile = pgTable(
+  "therapist_profile",
+  {
+    id: uuid("id").defaultRandom().primaryKey(),
+    userId: text("user_id")
+      .notNull()
+      .unique()
+      .references(() => user.id, { onDelete: "cascade" }),
+    displayName: text("display_name").notNull(),
+    slug: text("slug").notNull().unique(),
+    bio: text("bio"),
+    city: text("city"),
+    isOnline: boolean("is_online").notNull().default(false),
+    priceMin: integer("price_min"),
+    priceMax: integer("price_max"),
+    languages: text("languages").array(),
+    whatsappPhone: text("whatsapp_phone"),
+    contactEmail: text("contact_email"),
+    published: boolean("published").notNull().default(false),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+    updatedAt: timestamp("updated_at")
+      .defaultNow()
+      .$onUpdate(() => /* @__PURE__ */ new Date())
+      .notNull(),
+  }
+);
+
+export const modality = pgTable("modality", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  nameHe: text("name_he").notNull(),
+  nameEn: text("name_en"),
+  slug: text("slug").notNull().unique(),
+});
+
+export const issue = pgTable("issue", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  nameHe: text("name_he").notNull(),
+  nameEn: text("name_en"),
+  slug: text("slug").notNull().unique(),
+});
+
+export const therapistModality = pgTable(
+  "therapist_modality",
+  {
+    id: uuid("id").defaultRandom().primaryKey(),
+    therapistProfileId: uuid("therapist_profile_id")
+      .notNull()
+      .references(() => therapistProfile.id, { onDelete: "cascade" }),
+    modalityId: uuid("modality_id")
+      .notNull()
+      .references(() => modality.id, { onDelete: "cascade" }),
+  },
+  (table) => ({
+    uniquePair: unique("therapist_modality_unique").on(
+      table.therapistProfileId,
+      table.modalityId
+    ),
+  })
+);
+
+export const therapistIssue = pgTable(
+  "therapist_issue",
+  {
+    id: uuid("id").defaultRandom().primaryKey(),
+    therapistProfileId: uuid("therapist_profile_id")
+      .notNull()
+      .references(() => therapistProfile.id, { onDelete: "cascade" }),
+    issueId: uuid("issue_id")
+      .notNull()
+      .references(() => issue.id, { onDelete: "cascade" }),
+  },
+  (table) => ({
+    uniquePair: unique("therapist_issue_unique").on(
+      table.therapistProfileId,
+      table.issueId
+    ),
+  })
+);
+
+export const credential = pgTable("credential", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  therapistProfileId: uuid("therapist_profile_id")
+    .notNull()
+    .references(() => therapistProfile.id, { onDelete: "cascade" }),
+  title: text("title"),
+  issuer: text("issuer"),
+  issuedYear: integer("issued_year"),
+  fileUrl: text("file_url").notNull(),
+  status: credentialStatus("status").notNull().default("pending"),
+  verifiedBy: text("verified_by").references(() => user.id),
+  verifiedAt: timestamp("verified_at"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at")
+    .defaultNow()
+    .$onUpdate(() => /* @__PURE__ */ new Date())
+    .notNull(),
+});
 
 export const session = pgTable(
   "session",

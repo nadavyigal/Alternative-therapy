@@ -1,0 +1,45 @@
+story:
+  id: "2.6"
+  epic: "Epic 2 - Profiles & Directory"
+  title: "Public therapist profile page"
+  priority: "P0"
+  estimatedHours: 6
+
+userStory: |
+  As a client
+  I want to view a therapist profile page
+  So that I can learn about their services and contact them
+
+tasks:
+  - id: "2.6.1"
+    description: "Create public profile page for /t/[slug]"
+    files: ["src/app/(public)/t/[slug]/page.tsx"]
+
+acceptanceCriteria:
+  - "Profile page loads by slug and shows public fields"
+  - "Shows modalities, issues, price range, and contact methods"
+  - "Only published profiles are visible"
+  - "All labels and helper text are in Hebrew"
+  - "Page includes non-medical disclaimer"
+
+technicalSpecs:
+  dependencies:
+    - "therapist_profile table exists"
+    - "taxonomy tables exist"
+  implementationNotes:
+    - "Use server component for data fetching"
+    - "Return 404 for missing/unpublished profiles"
+
+tests:
+  - "Type check passes"
+
+definitionOfDone:
+  - "[ ] Profile page created"
+  - "[ ] Story marked complete"
+
+status:
+  created: true
+  implemented: true
+  qa: "passed"
+  notes:
+    - "Tests not run in this environment."

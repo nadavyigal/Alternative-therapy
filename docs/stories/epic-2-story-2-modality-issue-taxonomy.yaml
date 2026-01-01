@@ -1,0 +1,59 @@
+story:
+  id: "2.2"
+  epic: "Epic 2 - Profiles & Directory"
+  title: "Add modality and issue taxonomy tables"
+  priority: "P0"
+  estimatedHours: 5
+
+userStory: |
+  As a therapist
+  I want to tag my profile with modalities and issues treated
+  So that clients can filter and find relevant therapists
+
+tasks:
+  - id: "2.2.1"
+    description: "Add modality/issue tables and join tables in src/lib/schema.ts"
+    files: ["src/lib/schema.ts"]
+  - id: "2.2.2"
+    description: "Add taxonomy data helpers"
+    files: ["src/lib/therapy-taxonomy.ts"]
+  - id: "2.2.3"
+    description: "Create migration for taxonomy tables"
+    files:
+      [
+        "drizzle/0004_*",
+        "drizzle/meta/_journal.json",
+        "drizzle/meta/0004_snapshot.json",
+      ]
+
+acceptanceCriteria:
+  - "Modality and issue tables exist with unique slugs"
+  - "Therapist modality/issue join tables enforce unique pairs"
+  - "Helpers provide list and assignment operations"
+  - "Migration files added and tracked"
+
+technicalSpecs:
+  database:
+    - "modality and issue use uuid primary keys with default gen_random_uuid()"
+    - "join tables reference therapist_profile and taxonomy tables"
+  dependencies:
+    - "therapist_profile table exists"
+  implementationNotes:
+    - "No UI changes in this story"
+
+tests:
+  - "Type check passes"
+  - "Migration runs successfully (local environment)"
+
+definitionOfDone:
+  - "[ ] Schema updated"
+  - "[ ] Migration added"
+  - "[ ] Data helpers implemented"
+  - "[ ] Story marked complete"
+
+status:
+  created: true
+  implemented: true
+  qa: "passed"
+  notes:
+    - "Tests not run in this environment."

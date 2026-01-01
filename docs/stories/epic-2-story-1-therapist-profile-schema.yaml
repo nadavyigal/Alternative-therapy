@@ -1,0 +1,62 @@
+story:
+  id: "2.1"
+  epic: "Epic 2 - Profiles & Directory"
+  title: "Create therapist profile table and data access"
+  priority: "P0"
+  estimatedHours: 6
+
+userStory: |
+  As a therapist
+  I want a profile record stored in the database
+  So that I can publish a public profile later
+
+tasks:
+  - id: "2.1.1"
+    description: "Add therapistProfile table to src/lib/schema.ts"
+    files: ["src/lib/schema.ts"]
+  - id: "2.1.2"
+    description: "Add data access helpers for therapist profiles"
+    files: ["src/lib/therapist-profile.ts"]
+  - id: "2.1.3"
+    description: "Create migration for therapist_profile table"
+    files:
+      [
+        "drizzle/0003_*",
+        "drizzle/meta/_journal.json",
+        "drizzle/meta/0003_snapshot.json",
+      ]
+
+acceptanceCriteria:
+  - "Therapist profile table exists with required fields and defaults"
+  - "Each user can have at most one therapist profile"
+  - "Profile slug is unique"
+  - "Data access helpers support get by userId/slug and upsert"
+  - "Migration files added and tracked"
+
+technicalSpecs:
+  database:
+    - "therapist_profile uses uuid primary key with default gen_random_uuid()"
+    - "user_id references user.id with cascade delete"
+    - "published and is_online default false"
+  dependencies:
+    - "Drizzle ORM schema"
+  implementationNotes:
+    - "Use snake_case column names"
+    - "No UI changes in this story"
+
+tests:
+  - "Type check passes"
+  - "Migration runs successfully (local environment)"
+
+definitionOfDone:
+  - "[ ] Schema updated"
+  - "[ ] Migration added"
+  - "[ ] Data helpers implemented"
+  - "[ ] Story marked complete"
+
+status:
+  created: true
+  implemented: true
+  qa: "passed"
+  notes:
+    - "Tests not run in this environment."

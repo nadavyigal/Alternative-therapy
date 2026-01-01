@@ -1,0 +1,48 @@
+story:
+  id: "2.4"
+  epic: "Epic 2 - Profiles & Directory"
+  title: "Therapist profile builder UI"
+  priority: "P0"
+  estimatedHours: 8
+
+userStory: |
+  As a therapist
+  I want a profile builder UI
+  So that I can edit and publish my public profile
+
+tasks:
+  - id: "2.4.1"
+    description: "Create profile builder page under therapist routes"
+    files: ["src/app/(therapist)/therapist/profile/page.tsx"]
+  - id: "2.4.2"
+    description: "Add profile form component"
+    files: ["src/components/therapist/profile-form/profile-form.tsx"]
+
+acceptanceCriteria:
+  - "Therapist can create and update profile fields"
+  - "Profile supports publish toggle with phone verification gate"
+  - "Modalities and issues can be selected"
+  - "All labels and helper text are in Hebrew"
+
+technicalSpecs:
+  dependencies:
+    - "therapist_profile table exists"
+    - "taxonomy tables exist"
+  implementationNotes:
+    - "Use server action to save profile"
+    - "No new API routes in this story"
+
+tests:
+  - "Type check passes"
+
+definitionOfDone:
+  - "[ ] Page and form created"
+  - "[ ] Save flow implemented"
+  - "[ ] Story marked complete"
+
+status:
+  created: true
+  implemented: true
+  qa: "passed"
+  notes:
+    - "Tests not run in this environment."

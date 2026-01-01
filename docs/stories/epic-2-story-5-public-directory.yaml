@@ -1,0 +1,45 @@
+story:
+  id: "2.5"
+  epic: "Epic 2 - Profiles & Directory"
+  title: "Public therapist directory page"
+  priority: "P0"
+  estimatedHours: 8
+
+userStory: |
+  As a client
+  I want a public directory of therapists
+  So that I can browse and filter by needs
+
+tasks:
+  - id: "2.5.1"
+    description: "Create public directory page with filters and list"
+    files: ["src/app/(public)/directory/page.tsx"]
+
+acceptanceCriteria:
+  - "Directory lists published therapist profiles"
+  - "Filters for city, modality, issue, and online work"
+  - "All labels and helper text are in Hebrew"
+  - "Directory includes disclaimer about non-medical service"
+
+technicalSpecs:
+  dependencies:
+    - "therapist_profile table exists"
+    - "taxonomy tables exist"
+  implementationNotes:
+    - "Use server component for data fetching"
+    - "No client-side state required"
+
+tests:
+  - "Type check passes"
+
+definitionOfDone:
+  - "[ ] Directory page created"
+  - "[ ] Filters wired to query params"
+  - "[ ] Story marked complete"
+
+status:
+  created: true
+  implemented: true
+  qa: "passed"
+  notes:
+    - "Tests not run in this environment."
