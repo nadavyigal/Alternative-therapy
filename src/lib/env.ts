@@ -17,6 +17,8 @@ const serverEnvSchema = z.object({
   // OAuth
   GOOGLE_CLIENT_ID: z.string().optional(),
   GOOGLE_CLIENT_SECRET: z.string().optional(),
+  FACEBOOK_CLIENT_ID: z.string().optional(),
+  FACEBOOK_CLIENT_SECRET: z.string().optional(),
 
   // AI
   OPENROUTER_API_KEY: z.string().optional(),
@@ -105,7 +107,11 @@ export function checkEnv(): void {
 
   // Check optional variables and warn
   if (!process.env.GOOGLE_CLIENT_ID || !process.env.GOOGLE_CLIENT_SECRET) {
-    warnings.push("Google OAuth is not configured. Social login will be disabled.");
+    warnings.push("Google OAuth is not configured. Google login will be disabled.");
+  }
+
+  if (!process.env.FACEBOOK_CLIENT_ID || !process.env.FACEBOOK_CLIENT_SECRET) {
+    warnings.push("Facebook OAuth is not configured. Facebook login will be disabled.");
   }
 
   if (!process.env.OPENROUTER_API_KEY) {

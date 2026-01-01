@@ -15,6 +15,8 @@ API routes live under `src/app/api/` and follow Next.js App Router conventions. 
 | POST | `/api/phone-verification/verify` | Auth | Verify phone OTP | `src/app/api/phone-verification/verify/route.ts` |
 | POST | `/api/ai/message-draft` | Therapist | Generate AI draft (Hebrew) | `src/app/api/ai/message-draft/route.ts` |
 | POST | `/api/uploads/credential` | Therapist | Upload credential file | `src/app/api/uploads/credential/route.ts` |
+| POST | `/api/uploads/profile-image` | Therapist | Upload profile image | `src/app/api/uploads/profile-image/route.ts` |
+| POST | `/api/taxonomy/modality` | Therapist | Create custom modality (becomes filterable) | `src/app/api/taxonomy/modality/route.ts` |
 | POST | `/api/service-requests/create` | Therapist | Create partner referral | `src/app/api/service-requests/create/route.ts` |
 | GET | `/api/admin/credentials` | Admin | Review credential queue | `src/app/api/admin/credentials/route.ts` |
 | PATCH | `/api/admin/credentials/[id]` | Admin | Approve/reject credential | `src/app/api/admin/credentials/[id]/route.ts` |

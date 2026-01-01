@@ -1,5 +1,4 @@
 import type { ReactNode } from "react";
-
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -11,8 +10,8 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import type { TherapistProfile } from "@/lib/therapist-profile";
 import { issue, modality } from "@/lib/schema";
+import type { TherapistProfile } from "@/lib/therapist-profile";
 
 type ProfileFormProps = {
   action: (formData: FormData) => Promise<void>;
@@ -33,8 +32,19 @@ export function ProfileForm({
   selectedIssueIds,
   statusMessage,
 }: ProfileFormProps) {
+  const selectedDays = new Set(profile?.availableDays ?? []);
+  const daysOfWeek = [
+    { value: "sun", label: "ראשון" },
+    { value: "mon", label: "שני" },
+    { value: "tue", label: "שלישי" },
+    { value: "wed", label: "רביעי" },
+    { value: "thu", label: "חמישי" },
+    { value: "fri", label: "שישי" },
+    { value: "sat", label: "שבת" },
+  ];
+
   return (
-    <form action={action} className="space-y-6">
+    <form action={action} className="space-y-6" encType="multipart/form-data">
       {statusMessage}
 
       <Card>
@@ -85,6 +95,38 @@ export function ProfileForm({
               placeholder="ספר/י על הגישה הטיפולית שלך."
             />
           </div>
+          <div className="grid gap-2">
+            <label htmlFor="startedTreatingYear" className="text-sm font-medium">
+              שנת התחלת טיפול
+            </label>
+            <Input
+              id="startedTreatingYear"
+              name="startedTreatingYear"
+              type="number"
+              min={1900}
+              max={new Date().getFullYear()}
+              defaultValue={profile?.startedTreatingYear ?? ""}
+              placeholder="2015"
+            />
+          </div>
+          <div className="grid gap-2">
+            <label htmlFor="profileImage" className="text-sm font-medium">
+              תמונת פרופיל
+            </label>
+            {profile?.profileImageUrl && (
+              <img
+                src={profile.profileImageUrl}
+                alt={profile.displayName}
+                className="h-20 w-20 rounded-full border object-cover"
+              />
+            )}
+            <Input
+              id="profileImage"
+              name="profileImage"
+              type="file"
+              accept="image/*"
+            />
+          </div>
         </CardContent>
       </Card>
 
@@ -108,15 +150,45 @@ export function ProfileForm({
             />
           </div>
 
-          <label className="flex items-center gap-3">
-            <input
-              type="checkbox"
-              name="isOnline"
-              defaultChecked={profile?.isOnline ?? false}
-              className="h-4 w-4 accent-teal-600"
-            />
-            <span className="text-sm font-medium">אפשרות לטיפול אונליין</span>
-          </label>
+          <div className="grid gap-2">
+            <span className="text-sm font-medium">אופן טיפול</span>
+            <label className="flex items-center gap-3">
+              <input
+                type="checkbox"
+                name="offersInPerson"
+                defaultChecked={profile?.offersInPerson ?? false}
+                className="h-4 w-4 accent-teal-600"
+              />
+              <span className="text-sm">קליניקה / ביקור פיזי</span>
+            </label>
+            <label className="flex items-center gap-3">
+              <input
+                type="checkbox"
+                name="offersOnline"
+                defaultChecked={profile?.offersOnline ?? profile?.isOnline ?? false}
+                className="h-4 w-4 accent-teal-600"
+              />
+              <span className="text-sm">זום / אונליין</span>
+            </label>
+          </div>
+
+          <div className="grid gap-2">
+            <span className="text-sm font-medium">ימי טיפול</span>
+            <div className="flex flex-wrap gap-3">
+              {daysOfWeek.map((day) => (
+                <label key={day.value} className="flex items-center gap-2">
+                  <input
+                    type="checkbox"
+                    name="availableDays"
+                    value={day.value}
+                    defaultChecked={selectedDays.has(day.value)}
+                    className="h-4 w-4 accent-teal-600"
+                  />
+                  <span className="text-sm">{day.label}</span>
+                </label>
+              ))}
+            </div>
+          </div>
 
           <div className="grid gap-4 sm:grid-cols-2">
             <div className="grid gap-2">
@@ -223,6 +295,16 @@ export function ProfileForm({
                 ))}
               </div>
             )}
+            <div className="grid gap-2">
+              <label htmlFor="customModalities" className="text-sm font-medium">
+                שיטה שלא מופיעה ברשימה
+              </label>
+              <Input
+                id="customModalities"
+                name="customModalities"
+                placeholder="אפשר להזין כמה, מופרדים בפסיקים"
+              />
+            </div>
           </div>
 
           <div className="grid gap-3">
@@ -251,6 +333,35 @@ export function ProfileForm({
               </div>
             )}
           </div>
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-xl">ביטוח אחריות מקצועית</CardTitle>
+          <CardDescription>מסמך זה נשמר פנימי בלבד ואינו מוצג בפרופיל הציבורי.</CardDescription>
+        </CardHeader>
+        <CardContent className="grid gap-4">
+          <div className="grid gap-2">
+            <label htmlFor="insuranceFile" className="text-sm font-medium">
+              העלאת תעודת ביטוח
+            </label>
+            <Input
+              id="insuranceFile"
+              name="insuranceFile"
+              type="file"
+              accept=".pdf,image/*"
+            />
+          </div>
+          <label className="flex items-center gap-3">
+            <input
+              type="checkbox"
+              name="noInsurance"
+              defaultChecked={profile?.insuranceStatus === "none"}
+              className="h-4 w-4 accent-teal-600"
+            />
+            <span className="text-sm font-medium">אין לי ביטוח אחריות מקצועית</span>
+          </label>
         </CardContent>
       </Card>
 

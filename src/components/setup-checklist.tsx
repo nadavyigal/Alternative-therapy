@@ -11,6 +11,8 @@ type DiagnosticsResponse = {
     BETTER_AUTH_SECRET: boolean;
     GOOGLE_CLIENT_ID: boolean;
     GOOGLE_CLIENT_SECRET: boolean;
+    FACEBOOK_CLIENT_ID: boolean;
+    FACEBOOK_CLIENT_SECRET: boolean;
     OPENROUTER_API_KEY: boolean;
     NEXT_PUBLIC_APP_URL: boolean;
   };
@@ -69,6 +71,11 @@ export function SetupChecklist() {
     load();
   }, []);
 
+  const hasGoogle =
+    !!data?.env.GOOGLE_CLIENT_ID && !!data?.env.GOOGLE_CLIENT_SECRET;
+  const hasFacebook =
+    !!data?.env.FACEBOOK_CLIENT_ID && !!data?.env.FACEBOOK_CLIENT_SECRET;
+
   const steps = [
     {
       key: "env",
@@ -76,10 +83,9 @@ export function SetupChecklist() {
       ok:
         !!data?.env.POSTGRES_URL &&
         !!data?.env.BETTER_AUTH_SECRET &&
-        !!data?.env.GOOGLE_CLIENT_ID &&
-        !!data?.env.GOOGLE_CLIENT_SECRET,
+        (hasGoogle || hasFacebook),
       detail:
-        "Requires POSTGRES_URL, BETTER_AUTH_SECRET, GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET",
+        "Requires POSTGRES_URL, BETTER_AUTH_SECRET, plus Google or Facebook OAuth credentials",
     },
     {
       key: "db",

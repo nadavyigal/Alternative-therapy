@@ -1,5 +1,5 @@
 import { notFound } from "next/navigation";
-
+import { eq, inArray } from "drizzle-orm";
 import { db } from "@/lib/db";
 import {
   issue,
@@ -8,7 +8,6 @@ import {
   therapistModality,
   therapistProfile,
 } from "@/lib/schema";
-import { eq, inArray } from "drizzle-orm";
 
 type ProfilePageProps = {
   params: {
@@ -24,6 +23,19 @@ const formatPrice = (min?: number | null, max?: number | null) => {
     return `${min}–${max} ש\"ח`;
   }
   return `${min ?? max} ש\"ח`;
+};
+
+const getExperienceYears = (startedYear?: number | null) => {
+  if (!startedYear) {
+    return null;
+  }
+
+  const currentYear = new Date().getFullYear();
+  if (startedYear < 1900 || startedYear > currentYear) {
+    return null;
+  }
+
+  return currentYear - startedYear;
 };
 
 export default async function PublicProfilePage({ params }: ProfilePageProps) {
@@ -66,14 +78,40 @@ export default async function PublicProfilePage({ params }: ProfilePageProps) {
       : Promise.resolve([]),
   ]);
 
+  const experienceYears = getExperienceYears(profile.startedTreatingYear);
+  const offerLabels = [
+    profile.offersInPerson ? "קליניקה" : null,
+    profile.offersOnline || profile.isOnline ? "אונליין" : null,
+  ].filter((label): label is string => Boolean(label));
+  const offerText = offerLabels.length
+    ? `טיפול ${offerLabels.join(" / ")}`
+    : "סוג טיפול לא צוין";
+
   return (
     <div className="container mx-auto max-w-4xl px-4 py-10">
       <div className="mb-8 space-y-3">
-        <h1 className="text-3xl font-bold">{profile.displayName}</h1>
-        <p className="text-sm text-muted-foreground">
-          {profile.city || "מיקום גמיש"} •{" "}
-          {profile.isOnline ? "אפשרות אונליין" : "טיפול פרונטלי"}
-        </p>
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
+          {profile.profileImageUrl ? (
+            <img
+              src={profile.profileImageUrl}
+              alt={profile.displayName}
+              className="h-20 w-20 rounded-full border object-cover"
+              loading="lazy"
+            />
+          ) : (
+            <div
+              className="h-20 w-20 rounded-full bg-muted"
+              aria-hidden="true"
+            />
+          )}
+          <div>
+            <h1 className="text-3xl font-bold">{profile.displayName}</h1>
+            <p className="text-sm text-muted-foreground">
+              {profile.city || "מיקום גמיש"} • {offerText}
+              {experienceYears !== null ? ` • ותק ${experienceYears} שנים` : ""}
+            </p>
+          </div>
+        </div>
       </div>
 
       <div className="grid gap-6 rounded-2xl border bg-card p-6 shadow-sm">

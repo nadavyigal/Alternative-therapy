@@ -1,7 +1,5 @@
 import Link from "next/link";
-
-import { and, eq, inArray } from "drizzle-orm";
-
+import { and, eq, inArray, or } from "drizzle-orm";
 import { Input } from "@/components/ui/input";
 import { db } from "@/lib/db";
 import {
@@ -18,6 +16,7 @@ type DirectorySearchParams = {
   modalityId?: string;
   issueId?: string;
   online?: string;
+  inPerson?: string;
 };
 
 const toOptionalValue = (value?: string) =>
@@ -37,6 +36,7 @@ export default async function DirectoryPage({
   const modalityId = toOptionalValue(searchParams?.modalityId);
   const issueId = toOptionalValue(searchParams?.issueId);
   const onlineOnly = isTruthy(searchParams?.online);
+  const inPersonOnly = isTruthy(searchParams?.inPerson);
 
   const [modalities, issues] = await Promise.all([
     listModalities(),
@@ -70,8 +70,21 @@ export default async function DirectoryPage({
     filters.push(eq(therapistProfile.city, city));
   }
 
-  if (onlineOnly) {
-    filters.push(eq(therapistProfile.isOnline, true));
+  const wantsOnline = onlineOnly && !inPersonOnly;
+  const wantsInPerson = inPersonOnly && !onlineOnly;
+
+  if (wantsOnline) {
+    const onlineFilter = or(
+      eq(therapistProfile.offersOnline, true),
+      eq(therapistProfile.isOnline, true)
+    );
+    if (onlineFilter) {
+      filters.push(onlineFilter);
+    }
+  }
+
+  if (wantsInPerson) {
+    filters.push(eq(therapistProfile.offersInPerson, true));
   }
 
   if (profileIdsFilter && profileIdsFilter.length === 0) {
@@ -134,6 +147,19 @@ export default async function DirectoryPage({
       return `${min}–${max} ש"ח`;
     }
     return `${min ?? max} ש"ח`;
+  };
+
+  const getExperienceYears = (startedYear?: number | null) => {
+    if (!startedYear) {
+      return null;
+    }
+
+    const currentYear = new Date().getFullYear();
+    if (startedYear < 1900 || startedYear > currentYear) {
+      return null;
+    }
+
+    return currentYear - startedYear;
   };
 
   return (
@@ -200,16 +226,29 @@ export default async function DirectoryPage({
         </div>
 
         <div className="flex flex-col justify-between gap-3">
-          <label className="flex items-center gap-2 text-sm font-medium">
-            <input
-              type="checkbox"
-              name="online"
-              value="1"
-              defaultChecked={onlineOnly}
-              className="h-4 w-4 accent-teal-600"
-            />
-            טיפול אונליין בלבד
-          </label>
+          <div className="grid gap-2">
+            <span className="text-sm font-medium">סוג טיפול</span>
+            <label className="flex items-center gap-2 text-sm">
+              <input
+                type="checkbox"
+                name="online"
+                value="1"
+                defaultChecked={onlineOnly}
+                className="h-4 w-4 accent-teal-600"
+              />
+              טיפול אונליין
+            </label>
+            <label className="flex items-center gap-2 text-sm">
+              <input
+                type="checkbox"
+                name="inPerson"
+                value="1"
+                defaultChecked={inPersonOnly}
+                className="h-4 w-4 accent-teal-600"
+              />
+              טיפול בקליניקה
+            </label>
+          </div>
           <div className="flex items-center gap-3">
             <button
               type="submit"
@@ -236,6 +275,16 @@ export default async function DirectoryPage({
           {profiles.map((profile) => {
             const profileModalities = modalitiesByProfile.get(profile.id) ?? [];
             const profileIssues = issuesByProfile.get(profile.id) ?? [];
+            const experienceYears = getExperienceYears(
+              profile.startedTreatingYear
+            );
+            const offerLabels = [
+              profile.offersInPerson ? "קליניקה" : null,
+              profile.offersOnline || profile.isOnline ? "אונליין" : null,
+            ].filter((label): label is string => Boolean(label));
+            const offerText = offerLabels.length
+              ? `טיפול ${offerLabels.join(" / ")}`
+              : "סוג טיפול לא צוין";
 
             return (
               <div
@@ -243,12 +292,26 @@ export default async function DirectoryPage({
                 className="rounded-2xl border bg-card p-6 shadow-sm"
               >
                 <div className="flex items-start justify-between gap-4">
-                  <div>
-                    <h2 className="text-xl font-semibold">{profile.displayName}</h2>
-                    <p className="text-sm text-muted-foreground">
-                      {profile.city || "מיקום גמיש"} •{" "}
-                      {profile.isOnline ? "כולל אונליין" : "פרונטלי בלבד"}
-                    </p>
+                  <div className="flex items-start gap-4">
+                    {profile.profileImageUrl ? (
+                      <img
+                        src={profile.profileImageUrl}
+                        alt={profile.displayName}
+                        className="h-16 w-16 rounded-full border object-cover"
+                        loading="lazy"
+                      />
+                    ) : (
+                      <div
+                        className="h-16 w-16 rounded-full bg-muted"
+                        aria-hidden="true"
+                      />
+                    )}
+                    <div>
+                      <h2 className="text-xl font-semibold">{profile.displayName}</h2>
+                      <p className="text-sm text-muted-foreground">
+                        {profile.city || "מיקום גמיש"} • {offerText}
+                      </p>
+                    </div>
                   </div>
                   <span className="text-sm font-medium text-teal-700">
                     {formatPrice(profile.priceMin, profile.priceMax)}
@@ -272,6 +335,12 @@ export default async function DirectoryPage({
                     <div>
                       <span className="font-semibold">תחומים:</span>{" "}
                       {profileIssues.map((item) => item.nameHe).join(", ")}
+                    </div>
+                  )}
+                  {experienceYears !== null && (
+                    <div>
+                      <span className="font-semibold">ותק:</span>{" "}
+                      {experienceYears} שנים
                     </div>
                   )}
                   {(profile.whatsappPhone || profile.contactEmail) && (

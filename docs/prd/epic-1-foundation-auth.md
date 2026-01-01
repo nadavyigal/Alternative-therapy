@@ -7,6 +7,7 @@ Establish the authentication foundation, role-based access control, and Israeli 
 - Extend the Better Auth user table with role, phone, phoneVerified, locale.
 - Implement RBAC utilities and enforce them in protected layouts.
 - Add therapist-only phone OTP verification flow.
+- Add therapist-only social login (Google/Facebook) with role assignment.
 - Ensure baseline RTL/Heebo configuration in root layouts.
 
 ## User stories
@@ -17,6 +18,7 @@ Establish the authentication foundation, role-based access control, and Israeli 
 
 ## Acceptance criteria
 - User can sign up and return to the correct dashboard based on role.
+- Therapist can sign up with Google/Facebook; OAuth assigns therapist role; not available to clients.
 - Session persists across refresh; logout clears session.
 - Role defaults to `client` and can be set to `therapist`, `admin`, `partner`.
 - Phone is normalized to +972 format and stored.
@@ -35,6 +37,7 @@ Establish the authentication foundation, role-based access control, and Israeli 
   - `src/app/(therapist)/layout.tsx`
   - `src/app/(admin)/layout.tsx`
 - Use Better Auth session APIs in `src/lib/auth.ts` and `src/lib/auth-client.ts`.
+- Configure Better Auth social providers (Google/Facebook) and env vars; show options only for therapist onboarding.
 
 ## Dependencies
 - None. This epic is the foundation for all other epics.

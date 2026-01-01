@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { signUp } from "@/lib/auth-client"
+import { signIn, signUp } from "@/lib/auth-client"
 
 export function SignUpForm() {
   const router = useRouter()
@@ -34,12 +34,15 @@ export function SignUpForm() {
     setIsPending(true)
 
     try {
-      const result = await signUp.email({
+      const payload = {
         name,
         email,
         password,
+        role: "therapist",
         callbackURL: "/dashboard",
-      })
+      } as Parameters<typeof signUp.email>[0]
+
+      const result = await signUp.email(payload)
 
       if (result.error) {
         setError(result.error.message || "Failed to create account")
@@ -54,8 +57,55 @@ export function SignUpForm() {
     }
   }
 
+  const handleSocialSignIn = async (provider: "google" | "facebook") => {
+    setError("")
+    setIsPending(true)
+
+    try {
+      const result = await signIn.social({
+        provider,
+        callbackURL: "/dashboard",
+        newUserCallbackURL: "/therapist/profile",
+        requestSignUp: true,
+      })
+
+      if (result?.error) {
+        setError(result.error.message || "Failed to continue")
+      }
+    } catch {
+      setError("An unexpected error occurred")
+    } finally {
+      setIsPending(false)
+    }
+  }
+
   return (
     <form onSubmit={handleSubmit} className="space-y-4 w-full max-w-sm">
+      <div className="space-y-2">
+        <Button
+          type="button"
+          variant="outline"
+          className="w-full"
+          onClick={() => handleSocialSignIn("google")}
+          disabled={isPending}
+        >
+          Continue with Google
+        </Button>
+        <Button
+          type="button"
+          variant="outline"
+          className="w-full"
+          onClick={() => handleSocialSignIn("facebook")}
+          disabled={isPending}
+        >
+          Continue with Facebook
+        </Button>
+      </div>
+      <div className="flex items-center gap-3 text-xs text-muted-foreground">
+        <span className="h-px flex-1 bg-border" />
+        or
+        <span className="h-px flex-1 bg-border" />
+      </div>
       <div className="space-y-2">
         <Label htmlFor="name">Name</Label>
         <Input

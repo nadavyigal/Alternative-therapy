@@ -1,16 +1,19 @@
 ﻿# File Storage & Uploads
 
 ## Overview
-TherapistOS supports secure uploads for credentials and profile images. Production uses Vercel Blob; development uses local storage under `public/uploads/` via `src/lib/storage.ts`.
+TherapistOS supports secure uploads for credentials, professional liability insurance certificates, and profile images. Production uses Vercel Blob; development uses local storage under `public/uploads/` via `src/lib/storage.ts`.
 
 ## Security constraints
-- Allowed types: PDF, JPG, PNG.
+- Allowed types:
+  - Credentials/insurance: PDF, JPG, PNG.
+  - Profile images: JPG, PNG, WEBP.
 - Max size: 5MB.
 - Validate MIME type, file extension, and magic bytes.
 
 ## Implementation files
 - `src/lib/storage.ts` - Storage abstraction
 - `src/app/api/uploads/credential/route.ts` - Upload route (therapist only)
+- `src/app/api/uploads/profile-image/route.ts` - Upload route (therapist only)
 - `public/uploads/` - Local dev storage
 
 ## Validation helper (reference)
@@ -36,4 +39,4 @@ export function validateUpload(file: File, buffer: Uint8Array) {
 - `upload(buffer, filename, folder)`
 - `deleteFile(url)`
 
-Uploads must be tied to an authenticated therapist and recorded in the `credential` table.
+Credential and insurance uploads must be tied to an authenticated therapist and recorded in the `credential` table; profile images are stored on the therapist profile.

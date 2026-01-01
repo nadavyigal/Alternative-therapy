@@ -9,6 +9,8 @@ interface DiagnosticsResponse {
     BETTER_AUTH_SECRET: boolean;
     GOOGLE_CLIENT_ID: boolean;
     GOOGLE_CLIENT_SECRET: boolean;
+    FACEBOOK_CLIENT_ID: boolean;
+    FACEBOOK_CLIENT_SECRET: boolean;
     OPENROUTER_API_KEY: boolean;
     NEXT_PUBLIC_APP_URL: boolean;
   };
@@ -40,6 +42,8 @@ export async function GET(req: Request) {
     BETTER_AUTH_SECRET: Boolean(process.env.BETTER_AUTH_SECRET),
     GOOGLE_CLIENT_ID: Boolean(process.env.GOOGLE_CLIENT_ID),
     GOOGLE_CLIENT_SECRET: Boolean(process.env.GOOGLE_CLIENT_SECRET),
+    FACEBOOK_CLIENT_ID: Boolean(process.env.FACEBOOK_CLIENT_ID),
+    FACEBOOK_CLIENT_SECRET: Boolean(process.env.FACEBOOK_CLIENT_SECRET),
     OPENROUTER_API_KEY: Boolean(process.env.OPENROUTER_API_KEY),
     NEXT_PUBLIC_APP_URL: Boolean(process.env.NEXT_PUBLIC_APP_URL),
   } as const;
@@ -118,8 +122,9 @@ export async function GET(req: Request) {
     authRouteResponding = false;
   }
 
-  const authConfigured =
-    env.BETTER_AUTH_SECRET && env.GOOGLE_CLIENT_ID && env.GOOGLE_CLIENT_SECRET;
+  const hasGoogle = env.GOOGLE_CLIENT_ID && env.GOOGLE_CLIENT_SECRET;
+  const hasFacebook = env.FACEBOOK_CLIENT_ID && env.FACEBOOK_CLIENT_SECRET;
+  const authConfigured = env.BETTER_AUTH_SECRET && (hasGoogle || hasFacebook);
   const aiConfigured = env.OPENROUTER_API_KEY; // We avoid live-calling the AI provider here
 
   // Storage configuration check

@@ -7,6 +7,12 @@ Create the therapist profile experience and public directory so clients can disc
 - Therapist profile schema and CRUD.
 - Modalities and issues taxonomy with many-to-many relationships.
 - Credential uploads with verification status.
+- Profile image upload and display.
+- Start treating year with auto-calculated experience.
+- Explicit in-person/online toggles and available days of week.
+- Therapist-defined modalities that become filterable.
+- Insurance certificate upload (internal only).
+- AI extraction for credential metadata (title/issuer/issued year).
 - Public directory with filters and SEO profile pages.
 - Publish/unpublish profile toggle.
 
@@ -18,6 +24,12 @@ Create the therapist profile experience and public directory so clients can disc
 
 ## Acceptance criteria
 - Therapist can create, edit, publish, and unpublish a profile.
+- Profile shows auto-calculated years of experience from start year.
+- Profile photo upload works and renders on public profile.
+- Therapists can add a new modality and it appears in filters.
+- In-person/online toggles are explicit; available days are saved.
+- Credential upload auto-extracts metadata and allows edits.
+- Insurance certificate can be uploaded or marked "no insurance" (internal only).
 - Profile displays on mobile and includes at least one contact method.
 - Directory filters by modality and city/online within 3 clicks.
 - Profile pages are indexable and use SEO-friendly slugs.
@@ -30,6 +42,10 @@ Create the therapist profile experience and public directory so clients can disc
 - Public directory page at `src/app/(public)/directory/page.tsx`.
 - Public profile page at `src/app/(public)/t/[slug]/page.tsx`.
 - Upload handling via `src/lib/storage.ts` and upload API route.
+- Extend therapistProfile schema with startedTreatingYear, offersOnline/offersInPerson, availableDays, profileImageUrl.
+- Add profile image upload API route (therapist only).
+- Extend modality schema to allow therapist-created entries (immediately filterable).
+- Extend credential upload to support documentType=insurance and extraction metadata.
 - All user-facing labels in Hebrew (e.g., "שם תצוגה", "תחומי טיפול").
 
 ## Dependencies

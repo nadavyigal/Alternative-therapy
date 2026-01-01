@@ -1,15 +1,17 @@
 import { redirect } from "next/navigation";
-
 import { ProfileForm } from "@/components/therapist/profile-form/profile-form";
+import { createCredential } from "@/lib/credentials";
+import { requireRole } from "@/lib/rbac";
+import { upload } from "@/lib/storage";
 import {
   createTherapistProfile,
   getTherapistProfileByUserId,
   updateTherapistProfile,
 } from "@/lib/therapist-profile";
-import { requireRole } from "@/lib/rbac";
 import {
   getTherapistIssues,
   getTherapistModalities,
+  ensureModality,
   listIssues,
   listModalities,
   setTherapistIssues,
@@ -39,6 +41,24 @@ const toOptionalNumber = (value: string) => {
 
 const toOptionalText = (value: string) => (value ? value : null);
 
+const toOptionalYear = (value: string) => {
+  if (!value) {
+    return null;
+  }
+
+  const parsed = Number(value);
+  if (!Number.isFinite(parsed)) {
+    return null;
+  }
+
+  const currentYear = new Date().getFullYear();
+  if (parsed < 1900 || parsed > currentYear) {
+    return null;
+  }
+
+  return parsed;
+};
+
 const slugify = (value: string) =>
   value
     .toLowerCase()
@@ -50,6 +70,26 @@ const slugify = (value: string) =>
 
 const toIdList = (entries: FormDataEntryValue[]) =>
   entries.filter((entry): entry is string => typeof entry === "string");
+
+const PROFILE_IMAGE_TYPES = new Set(["image/jpeg", "image/png", "image/webp"]);
+const PROFILE_IMAGE_EXTENSIONS = new Set([".jpg", ".jpeg", ".png", ".webp"]);
+const INSURANCE_TYPES = new Set([
+  "application/pdf",
+  "image/jpeg",
+  "image/png",
+]);
+const INSURANCE_EXTENSIONS = new Set([".pdf", ".jpg", ".jpeg", ".png"]);
+const MAX_UPLOAD_SIZE = 5 * 1024 * 1024;
+
+const isAllowedFile = (
+  file: File,
+  allowedTypes: Set<string>,
+  allowedExtensions: Set<string>
+) => {
+  const extension = file.name.slice(file.name.lastIndexOf(".")).toLowerCase();
+  const mimeAllowed = file.type ? allowedTypes.has(file.type) : false;
+  return allowedExtensions.has(extension) || mimeAllowed;
+};
 
 export default async function TherapistProfilePage({
   searchParams,
@@ -127,6 +167,9 @@ export default async function TherapistProfilePage({
     const city = toOptionalText(toStringValue(formData, "city"));
     const whatsappPhone = toOptionalText(toStringValue(formData, "whatsappPhone"));
     const contactEmail = toOptionalText(toStringValue(formData, "contactEmail"));
+    const startedTreatingYear = toOptionalYear(
+      toStringValue(formData, "startedTreatingYear")
+    );
     const languagesRaw = toStringValue(formData, "languages");
     const languages = languagesRaw
       ? languagesRaw
@@ -134,6 +177,10 @@ export default async function TherapistProfilePage({
           .map((item) => item.trim())
           .filter(Boolean)
       : null;
+    const offersOnline = formData.get("offersOnline") === "on";
+    const offersInPerson = formData.get("offersInPerson") === "on";
+    const availableDays = toIdList(formData.getAll("availableDays"));
+    const noInsurance = formData.get("noInsurance") === "on";
 
     const wantsPublished = formData.get("published") === "on";
     const phoneVerified = Boolean(
@@ -145,7 +192,11 @@ export default async function TherapistProfilePage({
       slug,
       bio,
       city,
-      isOnline: formData.get("isOnline") === "on",
+      startedTreatingYear,
+      offersOnline,
+      offersInPerson,
+      availableDays: availableDays.length > 0 ? availableDays : null,
+      isOnline: offersOnline,
       priceMin: toOptionalNumber(toStringValue(formData, "priceMin")),
       priceMax: toOptionalNumber(toStringValue(formData, "priceMax")),
       languages,
@@ -155,11 +206,45 @@ export default async function TherapistProfilePage({
     };
 
     try {
+      const profileImageFile = formData.get("profileImage");
+      let profileImageUrl: string | null = null;
+      if (profileImageFile instanceof File && profileImageFile.size > 0) {
+        if (profileImageFile.size > MAX_UPLOAD_SIZE) {
+          redirect("/therapist/profile?error=save");
+        }
+        if (
+          !isAllowedFile(
+            profileImageFile,
+            PROFILE_IMAGE_TYPES,
+            PROFILE_IMAGE_EXTENSIONS
+          )
+        ) {
+          redirect("/therapist/profile?error=save");
+        }
+
+        const buffer = Buffer.from(await profileImageFile.arrayBuffer());
+        const { url } = await upload(buffer, profileImageFile.name, "profile-images", {
+          maxSize: MAX_UPLOAD_SIZE,
+        });
+        profileImageUrl = url;
+      }
+
       const existing = await getTherapistProfileByUserId(freshSession.user.id);
+      const insuranceStatus = noInsurance
+        ? "none"
+        : existing?.insuranceStatus === "none"
+          ? "unknown"
+          : undefined;
       const record = existing
-        ? await updateTherapistProfile(freshSession.user.id, profilePayload)
+        ? await updateTherapistProfile(freshSession.user.id, {
+            ...profilePayload,
+            ...(insuranceStatus ? { insuranceStatus } : {}),
+            ...(profileImageUrl ? { profileImageUrl } : {}),
+          })
         : await createTherapistProfile({
             ...profilePayload,
+            ...(insuranceStatus ? { insuranceStatus } : {}),
+            ...(profileImageUrl ? { profileImageUrl } : {}),
             userId: freshSession.user.id,
           });
 
@@ -167,16 +252,59 @@ export default async function TherapistProfilePage({
         redirect("/therapist/profile?error=save");
       }
 
+      const customModalitiesRaw = toStringValue(formData, "customModalities");
+      const customNames = customModalitiesRaw
+        ? customModalitiesRaw.split(",").map((item) => item.trim()).filter(Boolean)
+        : [];
+      const createdModalities = await Promise.all(
+        customNames.map((name) => ensureModality(name, freshSession.user.id))
+      );
+      const customModalityIds = createdModalities
+        .filter((item): item is NonNullable<typeof item> => Boolean(item))
+        .map((item) => item.id);
+      const selectedModalityIds = toIdList(formData.getAll("modalityIds"));
+      const modalityIds = Array.from(
+        new Set([...selectedModalityIds, ...customModalityIds])
+      );
+
       await Promise.all([
-        setTherapistModalities(
-          record.id,
-          toIdList(formData.getAll("modalityIds"))
-        ),
+        setTherapistModalities(record.id, modalityIds),
         setTherapistIssues(
           record.id,
           toIdList(formData.getAll("issueIds"))
         ),
       ]);
+
+      const insuranceFile = formData.get("insuranceFile");
+      if (insuranceFile instanceof File && insuranceFile.size > 0) {
+        if (insuranceFile.size > MAX_UPLOAD_SIZE) {
+          redirect("/therapist/profile?error=save");
+        }
+        if (
+          !isAllowedFile(
+            insuranceFile,
+            INSURANCE_TYPES,
+            INSURANCE_EXTENSIONS
+          )
+        ) {
+          redirect("/therapist/profile?error=save");
+        }
+
+        const buffer = Buffer.from(await insuranceFile.arrayBuffer());
+        const { url } = await upload(buffer, insuranceFile.name, "credentials", {
+          maxSize: MAX_UPLOAD_SIZE,
+        });
+
+        await createCredential({
+          therapistProfileId: record.id,
+          fileUrl: url,
+          documentType: "insurance",
+        });
+
+        await updateTherapistProfile(freshSession.user.id, {
+          insuranceStatus: "insured",
+        });
+      }
 
       if (wantsPublished && !phoneVerified) {
         redirect("/therapist/profile?error=phone");

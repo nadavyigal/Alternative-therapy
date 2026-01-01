@@ -11,12 +11,61 @@ import {
 const uniqueValues = (values: string[]) =>
   Array.from(new Set(values.filter(Boolean)));
 
+const slugify = (value: string) =>
+  value
+    .toLowerCase()
+    .trim()
+    .replace(/[\s_]+/g, "-")
+    .replace(/[^a-z0-9\u0590-\u05ff-]/g, "")
+    .replace(/-+/g, "-")
+    .replace(/^-+|-+$/g, "");
+
 export async function listModalities() {
   return db.select().from(modality).orderBy(asc(modality.nameHe));
 }
 
 export async function listIssues() {
   return db.select().from(issue).orderBy(asc(issue.nameHe));
+}
+
+export async function ensureModality(nameHe: string, userId: string) {
+  const slug = slugify(nameHe);
+  if (!slug) {
+    return null;
+  }
+
+  const [existing] = await db
+    .select()
+    .from(modality)
+    .where(eq(modality.slug, slug))
+    .limit(1);
+
+  if (existing) {
+    return existing;
+  }
+
+  const [created] = await db
+    .insert(modality)
+    .values({
+      nameHe,
+      slug,
+      source: "therapist",
+      createdByUserId: userId,
+    })
+    .onConflictDoNothing({ target: modality.slug })
+    .returning();
+
+  if (created) {
+    return created;
+  }
+
+  const [fallback] = await db
+    .select()
+    .from(modality)
+    .where(eq(modality.slug, slug))
+    .limit(1);
+
+  return fallback ?? null;
 }
 
 export async function getTherapistModalities(therapistProfileId: string) {

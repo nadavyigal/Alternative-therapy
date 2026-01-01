@@ -58,12 +58,18 @@ export const therapistProfile = pgTable(
     slug: text("slug").notNull().unique(),
     bio: text("bio"),
     city: text("city"),
+    startedTreatingYear: integer("started_treating_year"),
+    offersOnline: boolean("offers_online").notNull().default(false),
+    offersInPerson: boolean("offers_in_person").notNull().default(false),
+    availableDays: text("available_days").array(),
+    profileImageUrl: text("profile_image_url"),
     isOnline: boolean("is_online").notNull().default(false),
     priceMin: integer("price_min"),
     priceMax: integer("price_max"),
     languages: text("languages").array(),
     whatsappPhone: text("whatsapp_phone"),
     contactEmail: text("contact_email"),
+    insuranceStatus: text("insurance_status").notNull().default("unknown"),
     published: boolean("published").notNull().default(false),
     createdAt: timestamp("created_at").defaultNow().notNull(),
     updatedAt: timestamp("updated_at")
@@ -78,6 +84,8 @@ export const modality = pgTable("modality", {
   nameHe: text("name_he").notNull(),
   nameEn: text("name_en"),
   slug: text("slug").notNull().unique(),
+  source: text("source").notNull().default("system"),
+  createdByUserId: text("created_by_user_id").references(() => user.id),
 });
 
 export const issue = pgTable("issue", {
@@ -134,6 +142,8 @@ export const credential = pgTable("credential", {
   issuer: text("issuer"),
   issuedYear: integer("issued_year"),
   fileUrl: text("file_url").notNull(),
+  documentType: text("document_type").notNull().default("professional"),
+  extractionConfidence: integer("extraction_confidence"),
   status: credentialStatus("status").notNull().default("pending"),
   verifiedBy: text("verified_by").references(() => user.id),
   verifiedAt: timestamp("verified_at"),

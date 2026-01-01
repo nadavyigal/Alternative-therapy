@@ -33,3 +33,6 @@ const { text } = await generateText({
 - booking_confirmation
 - reschedule
 - reminder
+
+## Credential extraction
+When a credential document is uploaded, extract title, issuer, and issued year with a confidence score. Store extracted values in the credential record and allow therapists to edit before verification.

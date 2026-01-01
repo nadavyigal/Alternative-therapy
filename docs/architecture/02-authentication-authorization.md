@@ -13,7 +13,7 @@ TherapistOS uses Better Auth for email/password authentication, with a therapist
 - `src/app/(admin)/layout.tsx` - Admin route guard
 
 ## Auth flow
-1. User signs up with email/password.
+1. Therapists can sign up with email/password or Google/Facebook; clients use email/password.
 2. Role defaults to `client` (or is assigned to `therapist` during onboarding).
 3. Therapist users complete phone OTP verification before profile publish.
 4. Sessions are managed by Better Auth and persisted via the `session` table.

@@ -143,6 +143,8 @@ Outcome: Group attendance increased, admin reduced
 
 Email-based sign up/login (MVP)
 
+Therapist-only social login: Google + Facebook (OAuth), assigns therapist role
+
 Therapist role (later: admin, partner)
 
 Acceptance criteria
@@ -165,6 +167,16 @@ Pricing range (optional)
 
 Languages
 
+Start treating year (stored) with auto-calculated experience
+
+Offers: in-person and/or online (explicit yes/no)
+
+Available days of week (for availability display)
+
+Custom modality entry (creates a new modality that becomes filterable)
+
+Insurance certificate (internal only, not shown on public profile)
+
 Contact CTA: WhatsApp link + “Send inquiry” form button
 
 SEO
@@ -176,6 +188,8 @@ Indexable pages, fast load
 Acceptance criteria
 
 Therapist can publish/unpublish profile
+
+Profile photo upload works and renders on the public profile
 
 Profile page renders correctly on mobile
 
@@ -291,6 +305,8 @@ confirmation message
 reschedule message
 
 Reminder copy generation (tone presets)
+
+Credential document extraction: suggest title/issuer/issued year from uploads; therapist can edit
 
 Constraints
 

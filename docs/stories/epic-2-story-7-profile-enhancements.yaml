@@ -1,0 +1,78 @@
+story:
+  id: "2.7"
+  epic: "Epic 2 - Profiles & Directory"
+  title: "Therapist onboarding and profile enhancements"
+  priority: "P0"
+  estimatedHours: 18
+
+userStory: |
+  As a therapist
+  I want an enhanced onboarding and profile flow
+  So that my profile stays accurate, discoverable, and trusted
+
+tasks:
+  - id: "2.7.1"
+    description: "Add therapist-only social login (Google/Facebook) and assign therapist role"
+    files: ["src/lib/auth.ts", "src/lib/auth-client.ts", "src/components/auth/sign-up-form.tsx"]
+  - id: "2.7.2"
+    description: "Extend therapistProfile schema with startedTreatingYear, offersOnline/offersInPerson, availableDays, profileImageUrl and add migration"
+    files: ["src/lib/schema.ts", "drizzle/000X_*", "drizzle/meta/_journal.json", "drizzle/meta/000X_snapshot.json"]
+  - id: "2.7.3"
+    description: "Add profile image upload API route using storage helper"
+    files: ["src/app/api/uploads/profile-image/route.ts", "src/lib/storage.ts"]
+  - id: "2.7.4"
+    description: "Update therapist profile form to capture start year, location toggles, available days, and profile image"
+    files: ["src/components/therapist/profile-form/profile-form.tsx"]
+  - id: "2.7.5"
+    description: "Allow therapists to add custom modalities that become filterable"
+    files: ["src/lib/schema.ts", "src/lib/therapy-taxonomy.ts", "src/app/api/taxonomy/modality/route.ts"]
+  - id: "2.7.6"
+    description: "Extend credential upload to support insurance documents and AI extraction of title/issuer/year"
+    files: ["src/app/api/uploads/credential/route.ts", "src/lib/credentials.ts"]
+  - id: "2.7.7"
+    description: "Show profile image and auto-calculated years of experience on public profile"
+    files: ["src/app/(public)/t/[slug]/page.tsx"]
+  - id: "2.7.8"
+    description: "Ensure directory filters include newly created modalities"
+    files: ["src/app/(public)/directory/page.tsx", "src/lib/therapy-taxonomy.ts"]
+
+acceptanceCriteria:
+  - "Therapists can sign up with Google/Facebook; OAuth assigns therapist role and is not shown to clients"
+  - "Profile stores start treating year and shows auto-calculated years of experience on the public profile"
+  - "Profile photo upload works and renders on public profile"
+  - "Therapists can add a new modality and it appears in filters immediately"
+  - "Profile includes explicit in-person/online toggles and available days of week"
+  - "Credential upload auto-extracts title/issuer/year with a confidence score and allows edits"
+  - "Insurance certificate can be uploaded or marked as no insurance and stays internal only"
+
+technicalSpecs:
+  dependencies:
+    - "therapist_profile table exists"
+    - "taxonomy tables exist"
+    - "storage helper exists"
+  implementationNotes:
+    - "Use existing storage validation rules for uploads"
+    - "Custom modality creation must de-dupe by slug"
+    - "Years of experience should be computed in view layer from current year - startedTreatingYear"
+
+tests:
+  - "Type check passes"
+  - "Upload routes validate size/type"
+  - "Public profile renders years of experience and image"
+  - "New modalities appear in directory filters"
+
+definitionOfDone:
+  - "[ ] Social login wired for therapists only"
+  - "[ ] Schema and migrations updated"
+  - "[ ] Profile image upload working"
+  - "[ ] Custom modality creation working"
+  - "[ ] Credential extraction + insurance support working"
+  - "[ ] Public profile updated"
+  - "[ ] Story marked complete"
+
+status:
+  created: true
+  implemented: false
+  qa: "pending"
+  notes:
+    - "Tests not run in this environment."

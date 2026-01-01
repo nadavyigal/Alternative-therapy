@@ -40,7 +40,12 @@
 - slug (text, unique, indexed)
 - bio (text)
 - city (text)
-- isOnline (boolean, default false)
+- startedTreatingYear (integer, nullable)
+- offersOnline (boolean, default false)
+- offersInPerson (boolean, default false)
+- availableDays (text[], optional; values: sun, mon, tue, wed, thu, fri, sat)
+- profileImageUrl (text, optional)
+- isOnline (boolean, default false) [legacy; replace with offersOnline/offersInPerson]
 - priceMin, priceMax (integer, nullable)
 - languages (text[], optional)
 - whatsappPhone (text, normalized +972)
@@ -53,6 +58,8 @@
 - nameHe (text, not null)
 - nameEn (text, optional)
 - slug (text, unique)
+- source (text: system | therapist)
+- createdByUserId (text, fk -> user.id, nullable)
 
 ### therapistModality
 - therapistProfileId (uuid, fk)
@@ -77,10 +84,14 @@
 - issuer (text)
 - issuedYear (integer, nullable)
 - fileUrl (text, not null)
+- documentType (text: professional | insurance)
+- extractionConfidence (integer, optional)
 - status (credential_status, default pending)
 - verifiedBy (text, fk -> user.id, nullable)
 - verifiedAt (timestamp, nullable)
 - createdAt, updatedAt
+
+Note: Insurance documents are stored as credentials but remain internal-only.
 
 ### lead
 - id (uuid, pk)

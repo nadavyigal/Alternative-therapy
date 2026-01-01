@@ -10,20 +10,23 @@
 
 1. Therapist clicks an ad or link (“Get more clients & admin help”) and lands on a tailored landing page.
 2. They click **“I’m a therapist”** → Sign-up.
-3. Enter email + password → receive phone OTP → verify.
+3. Enter email + password (or Google/Facebook for therapists) → receive phone OTP → verify.
 4. System identifies role = Therapist and shows welcome screen:
    - Short explanation of benefits.
    - Progress bar: Profile → Credentials → Publish → Get Leads.
 5. Therapist fills **Profile step 1**:
-   - Name, title, languages, years of experience.
+   - Name, title, languages, start treating year (auto-calculate experience).
+   - Profile photo (public).
 6. Step 2:
    - Modalities (multi-select), issues they treat, target populations.
 7. Step 3:
-   - Locations (city, area), remote/in-person, price range (optional).
+   - Locations (city, area), explicit in-person and online toggles, available days of week, price range (optional).
 8. Therapist clicks **“Save and continue”**.
 9. System shows **Credential upload** page:
    - Prompts: “Upload at least 1 diploma/certificate to build trust”.
 10. Therapist uploads 1–3 documents, labels them (e.g., Reiki Level 2).
+    - System extracts title/issuer/year from credentials (AI); therapist can edit.
+    - Optional: upload professional liability insurance certificate or mark "no insurance" (internal only).
 11. System sets credentials to Pending and shows:
    - “Your credentials will be reviewed within X business days.”
 12. Therapist clicks **“Publish profile”**:
