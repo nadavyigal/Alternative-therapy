@@ -47,3 +47,10 @@ definitionOfDone:
   - "[ ] Documentation updated"
   - "[ ] TypeScript compiles without errors"
   - "[ ] Story marked complete"
+
+status:
+  created: true
+  implemented: true
+  qa: "pass"
+  notes:
+    - "lint warnings are pre-existing; no new lint errors introduced"

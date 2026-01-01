@@ -56,3 +56,10 @@ definitionOfDone:
   - "[ ] Migration runs successfully"
   - "[ ] TypeScript compiles without errors"
   - "[ ] Story marked complete"
+
+status:
+  created: true
+  implemented: true
+  qa: "blocked"
+  notes:
+    - "db:migrate failed (Postgres not running)"

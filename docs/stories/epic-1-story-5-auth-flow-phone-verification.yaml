@@ -48,3 +48,10 @@ definitionOfDone:
   - "[ ] Documentation updated"
   - "[ ] TypeScript compiles without errors"
   - "[ ] Story marked complete"
+
+status:
+  created: true
+  implemented: true
+  qa: "pass"
+  notes:
+    - "profile publish gating to be enforced when publish feature exists"

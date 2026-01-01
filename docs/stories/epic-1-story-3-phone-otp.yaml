@@ -50,3 +50,10 @@ definitionOfDone:
   - "[ ] Documentation updated"
   - "[ ] TypeScript compiles without errors"
   - "[ ] Story marked complete"
+
+status:
+  created: true
+  implemented: true
+  qa: "pass"
+  notes:
+    - "OTP storage is in-memory; replace with SMS provider for production"
