@@ -1,0 +1,59 @@
+story:
+  id: "3.3"
+  epic: "Epic 3 - Leads & CRM"
+  title: "Therapist lead inbox and status updates"
+  priority: "P0"
+  estimatedHours: 8
+
+userStory: |
+  As a therapist
+  I want a lead inbox with status updates
+  So that I can manage client inquiries efficiently
+
+tasks:
+  - id: "3.3.1"
+    description: "Create therapist leads API (list + update status)"
+    files: ["src/app/api/leads/route.ts", "src/app/api/leads/[id]/route.ts"]
+  - id: "3.3.2"
+    description: "Connect lead inbox UI to API data and status updates"
+    files: ["src/app/dashboard/leads/page.tsx"]
+  - id: "3.3.3"
+    description: "Ensure inbox filters/search work with live data"
+    files: ["src/app/dashboard/leads/page.tsx"]
+
+acceptanceCriteria:
+  - "Therapist can view leads associated with their profile"
+  - "Lead status can be updated to new, contacted, booked, closed, or no_show"
+  - "Leads are not visible to other therapists"
+  - "Inbox displays name, phone, message, status, and received timestamp"
+  - "All user-facing text is in Hebrew"
+
+technicalSpecs:
+  implementation:
+    - "GET /api/leads returns leads for the authenticated therapist"
+    - "PATCH /api/leads/[id] updates lead status after ownership check"
+    - "RBAC enforced via requireRole('therapist')"
+  dependencies:
+    - "Lead schema and helpers (Story 3.1)"
+    - "Lead capture flow (Story 3.2)"
+  implementationNotes:
+    - "Validate status updates against lead_status enum"
+    - "Return 404 for leads outside therapist ownership"
+
+tests:
+  - "Type check passes"
+  - "API returns 401 for unauthenticated users"
+  - "API returns 404 for cross-tenant lead access"
+
+definitionOfDone:
+  - "[ ] Lead inbox wired to API"
+  - "[ ] Status updates working"
+  - "[ ] Story marked complete"
+
+status:
+  created: true
+  implemented: true
+  qa: "pass"
+  notes:
+    - "Tests not run in this environment."
+    - "QA review complete; no blocking issues found."

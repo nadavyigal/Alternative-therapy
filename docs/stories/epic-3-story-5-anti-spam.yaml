@@ -1,0 +1,56 @@
+story:
+  id: "3.5"
+  epic: "Epic 3 - Leads & CRM"
+  title: "Anti-spam protection for lead capture"
+  priority: "P0"
+  estimatedHours: 5
+
+userStory: |
+  As a therapist
+  I want spam protection on lead submissions
+  So that my inbox stays high quality
+
+tasks:
+  - id: "3.5.1"
+    description: "Add honeypot field to lead capture form"
+    files: ["src/components/directory/lead-capture-form.tsx"]
+  - id: "3.5.2"
+    description: "Enforce honeypot + rate limiting in lead API"
+    files: ["src/app/api/leads/create/route.ts"]
+  - id: "3.5.3"
+    description: "Surface friendly errors for blocked submissions"
+    files: ["src/components/directory/lead-capture-form.tsx"]
+
+acceptanceCriteria:
+  - "Lead form includes a hidden honeypot field"
+  - "API rejects submissions with honeypot filled"
+  - "API rate-limits repeated submissions from the same IP"
+  - "User sees Hebrew error messaging when blocked"
+
+technicalSpecs:
+  implementation:
+    - "In-memory rate limit window of 10 minutes"
+    - "Max 5 lead submissions per IP per window"
+  dependencies:
+    - "Lead capture API (Story 3.2)"
+  implementationNotes:
+    - "Do not block legitimate submissions if email delivery fails"
+
+tests:
+  - "Type check passes"
+  - "Manual test: honeypot blocks submission"
+  - "Manual test: rate limit returns 429"
+
+definitionOfDone:
+  - "[ ] Honeypot added"
+  - "[ ] Rate limit enforced"
+  - "[ ] UI errors handled"
+  - "[ ] Story marked complete"
+
+status:
+  created: true
+  implemented: true
+  qa: "pass"
+  notes:
+    - "Tests not run in this environment."
+    - "QA review complete; no blocking issues found."

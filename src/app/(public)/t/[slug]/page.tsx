@@ -8,6 +8,7 @@ import {
   therapistModality,
   therapistProfile,
 } from "@/lib/schema";
+import { LeadCaptureForm } from "@/components/directory/lead-capture-form";
 
 type ProfilePageProps = {
   params: {
@@ -161,6 +162,13 @@ export default async function PublicProfilePage({ params }: ProfilePageProps) {
             </div>
           </div>
         )}
+      </div>
+
+      <div className="mt-6">
+        <LeadCaptureForm
+          therapistProfileId={profile.id}
+          therapistName={profile.displayName}
+        />
       </div>
 
       <div className="mt-8 rounded-2xl border bg-muted/30 p-4 text-sm text-muted-foreground">

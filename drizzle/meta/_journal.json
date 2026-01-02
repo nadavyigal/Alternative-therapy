@@ -50,6 +50,13 @@
       "when": 1767264580424,
       "tag": "0006_quiet_marsh",
       "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1767288880547,
+      "tag": "0007_luminous_meadow",
+      "breakpoints": true
     }
   ]
 }

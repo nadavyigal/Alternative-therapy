@@ -25,6 +25,14 @@ export const credentialStatus = pgEnum("credential_status", [
   "rejected",
 ]);
 
+export const leadStatus = pgEnum("lead_status", [
+  "new",
+  "contacted",
+  "booked",
+  "closed",
+  "no_show",
+]);
+
 export const user = pgTable(
   "user",
   {
@@ -153,6 +161,32 @@ export const credential = pgTable("credential", {
     .$onUpdate(() => /* @__PURE__ */ new Date())
     .notNull(),
 });
+
+export const lead = pgTable(
+  "lead",
+  {
+    id: uuid("id").defaultRandom().primaryKey(),
+    therapistProfileId: uuid("therapist_profile_id")
+      .notNull()
+      .references(() => therapistProfile.id, { onDelete: "cascade" }),
+    clientName: text("client_name").notNull(),
+    clientPhone: text("client_phone").notNull(),
+    message: text("message"),
+    status: leadStatus("status").notNull().default("new"),
+    source: text("source").notNull().default("profile"),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+    updatedAt: timestamp("updated_at")
+      .defaultNow()
+      .$onUpdate(() => /* @__PURE__ */ new Date())
+      .notNull(),
+  },
+  (table) => [
+    index("lead_profile_status_idx").on(
+      table.therapistProfileId,
+      table.status
+    ),
+  ]
+);
 
 export const session = pgTable(
   "session",

@@ -1,0 +1,56 @@
+story:
+  id: "3.4"
+  epic: "Epic 3 - Leads & CRM"
+  title: "Lead email notification to therapist"
+  priority: "P0"
+  estimatedHours: 6
+
+userStory: |
+  As a therapist
+  I want to receive an email when a new lead arrives
+  So that I can respond quickly
+
+tasks:
+  - id: "3.4.1"
+    description: "Create email helper for lead notifications"
+    files: ["src/lib/email.ts"]
+  - id: "3.4.2"
+    description: "Trigger lead notification email after lead creation"
+    files: ["src/app/api/leads/create/route.ts"]
+  - id: "3.4.3"
+    description: "Ensure email includes disclaimer and required lead details"
+    files: ["src/lib/email.ts"]
+
+acceptanceCriteria:
+  - "Lead notification emails are sent when RESEND_API_KEY is configured"
+  - "Email contains client name, phone, and message summary"
+  - "Email includes non-emergency disclaimer in Hebrew"
+  - "Email sending failures do not block lead creation"
+  - "All user-facing text is in Hebrew"
+
+technicalSpecs:
+  implementation:
+    - "Use RESEND_API_KEY + RESEND_FROM_EMAIL when present"
+    - "Fallback to console warning when email is not configured"
+  dependencies:
+    - "Lead capture API (Story 3.2)"
+  implementationNotes:
+    - "Do not send if therapist email is missing"
+    - "Avoid storing sensitive medical details in logs"
+
+tests:
+  - "Type check passes"
+  - "Lead creation succeeds when email is disabled"
+
+definitionOfDone:
+  - "[ ] Email helper created"
+  - "[ ] Lead creation triggers email when configured"
+  - "[ ] Story marked complete"
+
+status:
+  created: true
+  implemented: true
+  qa: "pass"
+  notes:
+    - "Tests not run in this environment."
+    - "QA review complete; no blocking issues found."

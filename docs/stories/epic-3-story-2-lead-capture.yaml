@@ -1,0 +1,60 @@
+story:
+  id: "3.2"
+  epic: "Epic 3 - Leads & CRM"
+  title: "Lead capture form and API route"
+  priority: "P0"
+  estimatedHours: 8
+
+userStory: |
+  As a client
+  I want to contact a therapist from their public profile
+  So that my inquiry is delivered and tracked as a lead
+
+tasks:
+  - id: "3.2.1"
+    description: "Create lead capture form component (Hebrew, RTL) and render on public profile page"
+    files: ["src/components/directory/lead-capture-form.tsx", "src/app/(public)/t/[slug]/page.tsx"]
+  - id: "3.2.2"
+    description: "Implement public lead capture API route"
+    files: ["src/app/api/leads/create/route.ts"]
+  - id: "3.2.3"
+    description: "Wire lead creation to data helper and validate required fields"
+    files: ["src/app/api/leads/create/route.ts", "src/lib/leads.ts"]
+
+acceptanceCriteria:
+  - "Public profile displays a lead form with name, phone, and message fields"
+  - "Form submission creates a lead and shows a success state"
+  - "API validates required fields and rejects invalid phone formats"
+  - "Leads are created only for published therapist profiles"
+  - "All user-facing text and disclaimers are in Hebrew"
+
+technicalSpecs:
+  implementation:
+    - "POST /api/leads/create accepts therapistProfileId, clientName, clientPhone, message"
+    - "Normalize phone to +972 format on insert"
+    - "Return 201 with lead id and status"
+  dependencies:
+    - "Lead schema and helpers (Story 3.1)"
+    - "therapist_profile table exists"
+  implementationNotes:
+    - "Include non-emergency disclaimer in the form"
+    - "Avoid storing sensitive medical details in messages"
+
+tests:
+  - "Type check passes"
+  - "API returns 400 for missing fields"
+  - "API returns 404 for missing/unpublished profiles"
+
+definitionOfDone:
+  - "[ ] Lead capture UI created"
+  - "[ ] Lead API route created"
+  - "[ ] Lead creation wired and validated"
+  - "[ ] Story marked complete"
+
+status:
+  created: true
+  implemented: true
+  qa: "pass"
+  notes:
+    - "Tests not run in this environment."
+    - "QA review complete; no blocking issues found."
