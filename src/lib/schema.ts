@@ -33,6 +33,21 @@ export const leadStatus = pgEnum("lead_status", [
   "no_show",
 ]);
 
+export const bookingStatus = pgEnum("booking_status", [
+  "pending",
+  "confirmed",
+  "completed",
+  "cancelled",
+]);
+
+export const referralStatus = pgEnum("referral_status", [
+  "sent",
+  "contacted",
+  "converted",
+  "lost",
+]);
+
+
 export const user = pgTable(
   "user",
   {
@@ -182,6 +197,74 @@ export const lead = pgTable(
   },
   (table) => [
     index("lead_profile_status_idx").on(
+      table.therapistProfileId,
+      table.status
+    ),
+  ]
+);
+
+export const booking = pgTable(
+  "booking",
+  {
+    id: uuid("id").defaultRandom().primaryKey(),
+    therapistProfileId: uuid("therapist_profile_id")
+      .notNull()
+      .references(() => therapistProfile.id, { onDelete: "cascade" }),
+    leadId: uuid("lead_id").references(() => lead.id, { onDelete: "set null" }),
+    clientName: text("client_name").notNull(),
+    scheduledAt: timestamp("scheduled_at").notNull(),
+    durationMinutes: integer("duration_minutes").notNull().default(60),
+    status: bookingStatus("status").notNull().default("pending"),
+    remindersEnabled: boolean("reminders_enabled").notNull().default(true),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+    updatedAt: timestamp("updated_at")
+      .defaultNow()
+      .$onUpdate(() => /* @__PURE__ */ new Date())
+      .notNull(),
+  },
+  (table) => [
+    index("booking_profile_scheduled_idx").on(
+      table.therapistProfileId,
+      table.scheduledAt
+    ),
+  ]
+);
+
+export const partner = pgTable("partner", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  name: text("name").notNull(),
+  category: text("category"),
+  email: text("email"),
+  phone: text("phone"),
+  website: text("website"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at")
+    .defaultNow()
+    .$onUpdate(() => /* @__PURE__ */ new Date())
+    .notNull(),
+});
+
+export const serviceRequest = pgTable(
+  "service_request",
+  {
+    id: uuid("id").defaultRandom().primaryKey(),
+    therapistProfileId: uuid("therapist_profile_id")
+      .notNull()
+      .references(() => therapistProfile.id, { onDelete: "cascade" }),
+    category: text("category").notNull(),
+    status: referralStatus("status").notNull().default("sent"),
+    details: text("details"),
+    partnerId: uuid("partner_id").references(() => partner.id, {
+      onDelete: "set null",
+    }),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+    updatedAt: timestamp("updated_at")
+      .defaultNow()
+      .$onUpdate(() => /* @__PURE__ */ new Date())
+      .notNull(),
+  },
+  (table) => [
+    index("service_request_profile_status_idx").on(
       table.therapistProfileId,
       table.status
     ),

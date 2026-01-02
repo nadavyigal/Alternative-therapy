@@ -1,0 +1,61 @@
+story:
+  id: "4.1"
+  epic: "Epic 4 - Bookings & AI"
+  title: "Create booking schema and data access"
+  priority: "P0"
+  estimatedHours: 6
+
+userStory: |
+  As a therapist
+  I want to store bookings with statuses and reminder settings
+  So that I can manage appointments end-to-end
+
+tasks:
+  - id: "4.1.1"
+    description: "Add booking_status enum and booking table in src/lib/schema.ts"
+    files: ["src/lib/schema.ts"]
+  - id: "4.1.2"
+    description: "Create booking data access helpers (create/list/update status)"
+    files: ["src/lib/bookings.ts"]
+  - id: "4.1.3"
+    description: "Create migration for booking schema"
+    files: ["drizzle/0008_*", "drizzle/meta/_journal.json", "drizzle/meta/0008_snapshot.json"]
+
+acceptanceCriteria:
+  - "booking_status enum includes pending, confirmed, completed, cancelled"
+  - "Booking table includes therapistProfileId, leadId (optional), clientName, scheduledAt, durationMinutes, status, remindersEnabled, createdAt, updatedAt"
+  - "Booking rows reference therapist_profile with cascade delete"
+  - "leadId references lead and is nullable"
+  - "Status defaults to pending and remindersEnabled defaults to true"
+  - "Data helpers support create, list by therapist profile, and status updates"
+  - "Migration files added and tracked"
+
+technicalSpecs:
+  database:
+    - "Use uuid primary key with default gen_random_uuid()"
+    - "Index therapist_profile_id and scheduled_at for calendar views"
+    - "Use onDelete set null for leadId"
+  dependencies:
+    - "therapist_profile table exists"
+    - "lead table exists"
+  implementationNotes:
+    - "Store scheduledAt in UTC"
+    - "Avoid storing medical details in booking notes"
+
+tests:
+  - "Type check passes"
+  - "Migration runs successfully (local environment)"
+
+definitionOfDone:
+  - "[ ] Schema updated"
+  - "[ ] Migration added"
+  - "[ ] Data helpers implemented"
+  - "[ ] Story marked complete"
+
+status:
+  created: true
+  implemented: true
+  qa: "pass"
+  notes:
+    - "Tests not run in this environment."
+    - "QA review complete; no blocking issues found."

@@ -2,12 +2,21 @@
 
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-import { LayoutDashboard, Users, Shield, Plug, User, Settings } from "lucide-react"
+import {
+  CalendarDays,
+  LayoutDashboard,
+  Plug,
+  Settings,
+  Shield,
+  User,
+  Users,
+} from "lucide-react"
 import { cn } from "@/lib/utils"
 
 const menuItems = [
   { icon: LayoutDashboard, label: "סקירה", href: "/dashboard" },
   { icon: Users, label: "פניות ממטופלים", href: "/dashboard/leads" },
+  { icon: CalendarDays, label: "\u05d9\u05d5\u05de\u05df \u05e4\u05d2\u05d9\u05e9\u05d5\u05ea", href: "/dashboard/bookings" },
   { icon: Shield, label: "שירותים אדמיניסטרטיביים", href: "/dashboard/services" },
   { icon: Plug, label: "אינטגרציות וחיבורים", href: "/dashboard/integrations" },
   { icon: User, label: "הפרופיל שלי", href: "/dashboard/profile" },

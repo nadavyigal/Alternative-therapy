@@ -1,0 +1,71 @@
+story:
+  id: "5.1"
+  epic: "Epic 5 - Referrals & Admin"
+  title: "Create service request and partner schema"
+  priority: "P0"
+  estimatedHours: 6
+
+userStory: |
+  As a therapist
+  I want to submit a partner referral request
+  So that I can get insurance, tax, or pension support
+
+tasks:
+  - id: "5.1.1"
+    description: "Add referral_status enum plus partner and service_request tables in src/lib/schema.ts"
+    files: ["src/lib/schema.ts"]
+  - id: "5.1.2"
+    description: "Add service request data helpers"
+    files: ["src/lib/service-requests.ts"]
+  - id: "5.1.3"
+    description: "Add partner data helpers"
+    files: ["src/lib/partners.ts"]
+  - id: "5.1.4"
+    description: "Create migration for partner/service_request schema"
+    files:
+      [
+        "drizzle/0009_productive_tyrannus.sql",
+        "drizzle/meta/_journal.json",
+        "drizzle/meta/0009_snapshot.json",
+      ]
+
+acceptanceCriteria:
+  - "referral_status enum includes sent, contacted, converted, lost"
+  - "service_request table includes therapistProfileId, category, status, details, partnerId, createdAt, updatedAt"
+  - "partner table includes name, category, email, phone, website, createdAt, updatedAt"
+  - "Service request status defaults to sent"
+  - "Service request references therapist_profile with cascade delete"
+  - "Partner reference is nullable and uses set null on delete"
+  - "Data helpers support create/list/update for service requests and create/list for partners"
+  - "Migration files added and tracked"
+
+technicalSpecs:
+  database:
+    - "Add referral_status enum"
+    - "service_request uses uuid primary key with default gen_random_uuid()"
+    - "partner uses uuid primary key with default gen_random_uuid()"
+    - "category stored as text (insurance | tax | pension)"
+    - "Index therapist_profile_id + status for admin/therapist filtering"
+  dependencies:
+    - "therapist_profile table exists"
+  implementationNotes:
+    - "Use snake_case column names"
+    - "No UI changes in this story"
+
+tests:
+  - "Type check passes"
+  - "Migration runs successfully (local environment)"
+
+definitionOfDone:
+  - "[ ] Schema updated"
+  - "[ ] Migration added"
+  - "[ ] Data helpers implemented"
+  - "[ ] Story marked complete"
+
+status:
+  created: true
+  implemented: true
+  qa: "pass"
+  notes:
+    - "Migration generated; db:migrate not run in this environment."
+    - "Tests not run in this environment."

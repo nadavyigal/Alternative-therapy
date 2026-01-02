@@ -57,6 +57,20 @@
       "when": 1767288880547,
       "tag": "0007_luminous_meadow",
       "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1767344872657,
+      "tag": "0008_overrated_sunspot",
+      "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "7",
+      "when": 1767366603941,
+      "tag": "0009_productive_tyrannus",
+      "breakpoints": true
     }
   ]
 }

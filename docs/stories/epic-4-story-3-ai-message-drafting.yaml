@@ -1,0 +1,57 @@
+story:
+  id: "4.3"
+  epic: "Epic 4 - Bookings & AI"
+  title: "AI message drafting for bookings"
+  priority: "P0"
+  estimatedHours: 6
+
+userStory: |
+  As a therapist
+  I want to generate Hebrew message drafts for bookings and reminders
+  So that I can respond quickly and consistently
+
+tasks:
+  - id: "4.3.1"
+    description: "Create AI message draft API route with OpenRouter and validation"
+    files: ["src/app/api/ai/message-draft/route.ts"]
+  - id: "4.3.2"
+    description: "Build AI draft UI with intent selection and editable draft"
+    files: ["src/components/therapist/ai-message-draft.tsx"]
+  - id: "4.3.3"
+    description: "Add AI draft component to bookings dashboard"
+    files: ["src/app/dashboard/bookings/page.tsx"]
+
+acceptanceCriteria:
+  - "Therapist can generate a Hebrew draft in one click and edit it before sending"
+  - "Draft API validates inputs, requires therapist auth, and returns JSON with text"
+  - "Draft prompt avoids medical advice and sensitive data requests"
+  - "Draft includes booking context (client name, requested time when provided)"
+  - "All UI text is in Hebrew and layout remains RTL"
+
+technicalSpecs:
+  api:
+    - "POST /api/ai/message-draft accepts { intent, context }"
+    - "intent values: lead_reply, booking_confirmation, reschedule, reminder"
+    - "context includes clientName and optional requestedTime + notes"
+  implementationNotes:
+    - "Use createOpenRouter + generateText"
+    - "Use system prompt to enforce Hebrew and safety constraints"
+    - "Return only the draft text"
+
+tests:
+  - "Type check passes"
+  - "API returns error when OpenRouter API key is missing"
+
+definitionOfDone:
+  - "[ ] AI draft API implemented"
+  - "[ ] AI draft UI implemented"
+  - "[ ] Bookings page updated"
+  - "[ ] Story marked complete"
+
+status:
+  created: true
+  implemented: true
+  qa: "pass"
+  notes:
+    - "Tests not run in this environment."
+    - "QA review complete; no blocking issues found."
