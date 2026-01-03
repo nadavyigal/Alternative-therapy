@@ -25,12 +25,86 @@ export default function TaxRequestPage() {
     invoiceSystemType: "",
     consent: false,
   })
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [error, setError] = useState("")
 
-  const handleNext = () => {
+  const buildDetails = () => {
+    const lines = [
+      `סוג פעילות: ${formData.businessType || "לא צוין"}`,
+      `שנות פעילות: ${formData.yearsActive || "לא צוין"}`,
+      `רואה חשבון/יועץ מס: ${
+        formData.hasAccountant === "yes"
+          ? "כן"
+          : formData.hasAccountant === "no"
+            ? "לא"
+            : "לא צוין"
+      }`,
+      `הכנסה שנתית משוערת: ${formData.revenue || "לא צוין"}`,
+      `מערכת חשבוניות קיימת: ${
+        formData.hasInvoiceSystem === "yes"
+          ? formData.invoiceSystemType === "green"
+            ? "כן (גרין אינוייס)"
+            : formData.invoiceSystemType === "other"
+              ? "כן (אחר)"
+              : "כן"
+          : formData.hasInvoiceSystem === "no"
+            ? "לא"
+            : "לא צוין"
+      }`,
+    ]
+
+    return lines.join("\n")
+  }
+
+  const submitRequest = async () => {
+    if (isSubmitting) {
+      return
+    }
+
+    setIsSubmitting(true)
+    setError("")
+
+    try {
+      const response = await fetch("/api/service-requests", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          category: "tax",
+          details: buildDetails(),
+          consent: formData.consent,
+        }),
+      })
+
+      if (!response.ok) {
+        const payload = await response.json().catch(() => null)
+        const message =
+          payload?.error === "PROFILE_REQUIRED"
+            ? "כדי לשלוח בקשה יש להשלים פרופיל מטפל."
+            : payload?.error === "CONSENT_REQUIRED"
+              ? "יש לאשר את תנאי ההעברה לפני שליחת הבקשה."
+              : payload?.error === "UNAUTHORIZED"
+                ? "יש להתחבר כדי לשלוח בקשה."
+                : "שליחת הבקשה נכשלה. נסו שוב בעוד רגע."
+        setError(message)
+        return
+      }
+
+      router.push("/dashboard/services?success=tax")
+    } catch {
+      setError("שליחת הבקשה נכשלה. נסו שוב בעוד רגע.")
+    } finally {
+      setIsSubmitting(false)
+    }
+  }
+
+  const handleNext = async () => {
     if (currentStep < STEPS.length - 1) {
       setCurrentStep(currentStep + 1)
-    } else if (formData.consent) {
-      router.push("/dashboard/services?success=tax")
+      return
+    }
+
+    if (formData.consent) {
+      await submitRequest()
     }
   }
 
@@ -245,13 +319,26 @@ export default function TaxRequestPage() {
 
                 {/* Navigation */}
                 <div className="flex justify-between pt-6 border-t border-border">
-                  <Button type="button" variant="outline" onClick={handleBack}>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={handleBack}
+                    disabled={isSubmitting}
+                  >
                     {currentStep === 0 ? "ביטול" : "חזרה"}
                   </Button>
-                  <Button onClick={handleNext} disabled={currentStep === 2 && !formData.consent}>
+                  <Button
+                    onClick={handleNext}
+                    disabled={isSubmitting || (currentStep === 2 && !formData.consent)}
+                  >
                     {currentStep === 2 ? "שליחת בקשה" : "הבא"}
                   </Button>
                 </div>
+                {error && (
+                  <p className="text-sm text-destructive" role="alert">
+                    {error}
+                  </p>
+                )}
               </CardContent>
             </Card>
           </div>

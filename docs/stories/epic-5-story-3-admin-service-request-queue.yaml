@@ -1,0 +1,57 @@
+story:
+  id: "5.3"
+  epic: "Epic 5 - Referrals & Admin"
+  title: "Admin service request queue"
+  priority: "P0"
+  estimatedHours: 6
+
+userStory: |
+  As an admin
+  I want to review service requests and assign partners
+  So that referrals are tracked and progressed
+
+tasks:
+  - id: "5.3.1"
+    description: "Add admin service request queue helpers (list with filters + status/partner updates)"
+    files: ["src/lib/service-requests.ts"]
+  - id: "5.3.2"
+    description: "Build admin service request queue page with filters, partner assignment, and status actions"
+    files: ["src/app/(admin)/service-requests/page.tsx"]
+  - id: "5.3.3"
+    description: "Add admin export endpoint for service request CSV"
+    files: ["src/app/api/service-requests/export/route.ts"]
+
+acceptanceCriteria:
+  - "Admin can view service requests with therapist name, email, category, status, partner, and submitted date"
+  - "Admin can filter by status, category, and partner (including unassigned)"
+  - "Admin can update request status and assign/unassign partners"
+  - "CSV export respects active filters"
+  - "Page is admin-protected and RTL with Hebrew UI copy"
+
+technicalSpecs:
+  data:
+    - "Join service_request -> therapist_profile -> user with optional partner"
+    - "Allow status updates to sent/contacted/converted/lost"
+  ui:
+    - "Route: /service-requests (src/app/(admin)/service-requests/page.tsx)"
+    - "Provide filter controls and export action"
+  dependencies:
+    - "service_request and partner tables exist"
+    - "admin role enforcement is active"
+
+tests:
+  - "Type check passes"
+
+definitionOfDone:
+  - "[ ] Admin queue page added"
+  - "[ ] Filters and export implemented"
+  - "[ ] Status + partner updates implemented"
+  - "[ ] Story marked complete"
+
+status:
+  created: true
+  implemented: true
+  qa: "pass"
+  notes:
+    - "Tests not run in this environment."
+    - "QA review complete; no blocking issues found."

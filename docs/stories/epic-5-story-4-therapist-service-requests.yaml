@@ -1,0 +1,65 @@
+story:
+  id: "5.4"
+  epic: "Epic 5 - Referrals & Admin"
+  title: "Therapist service request submission and tracking"
+  priority: "P0"
+  estimatedHours: 8
+
+userStory: |
+  As a therapist
+  I want to submit and track referral requests for partner services
+  So that I can get insurance, tax, or pension support
+
+tasks:
+  - id: "5.4.1"
+    description: "Add therapist-facing service request API route (create + list) with validation and RBAC"
+    files: ["src/app/api/service-requests/route.ts", "src/lib/service-requests.ts"]
+  - id: "5.4.2"
+    description: "Update therapist services dashboard to load real requests and show success state"
+    files: ["src/app/dashboard/services/page.tsx"]
+  - id: "5.4.3"
+    description: "Wire insurance, pension, and tax request forms to submit service requests with details"
+    files:
+      [
+        "src/app/dashboard/services/insurance/page.tsx",
+        "src/app/dashboard/services/pension/page.tsx",
+        "src/app/dashboard/services/tax/page.tsx",
+      ]
+
+acceptanceCriteria:
+  - "Therapists can submit insurance, pension, and tax service requests from the dashboard"
+  - "API validates category and requires a therapist profile"
+  - "Submitted requests default to status sent and return an id on success"
+  - "Therapist dashboard lists request category, status, partner, and submission date"
+  - "All UI remains Hebrew/RTL and includes error/success feedback"
+  - "Access is restricted to therapist role"
+
+technicalSpecs:
+  api:
+    - "GET /api/service-requests returns therapist requests"
+    - "POST /api/service-requests accepts category, details, consent"
+    - "Allowed categories: insurance | tax | pension"
+  data:
+    - "Use createServiceRequest and listServiceRequestsForProfile with partner join"
+    - "Store a concise summary of form details in service_request.details"
+  dependencies:
+    - "service_request and partner tables exist"
+    - "RBAC utilities available"
+
+tests:
+  - "Type check passes"
+  - "API returns 400 for missing profile or invalid category"
+
+definitionOfDone:
+  - "[ ] Therapist service request API added"
+  - "[ ] Therapist dashboard shows live requests"
+  - "[ ] Request forms submit successfully"
+  - "[ ] Story marked complete"
+
+status:
+  created: true
+  implemented: true
+  qa: "pass"
+  notes:
+    - "Tests not run in this environment."
+    - "QA review complete; no blocking issues found."

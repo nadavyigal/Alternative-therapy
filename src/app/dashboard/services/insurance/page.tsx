@@ -29,13 +29,81 @@ export default function InsuranceRequestPage() {
     notes: "",
     consent: false,
   })
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [error, setError] = useState("")
 
-  const handleNext = () => {
+  const buildDetails = () => {
+    const lines = [
+      `מיקום טיפול: ${formData.locations.join(", ") || "לא צוין"}`,
+      `מטופלים בשבוע: ${formData.patientsPerWeek || "לא צוין"}`,
+      `ביטוח קיים: ${
+        formData.hasCurrentInsurance === "yes"
+          ? `כן (${formData.currentInsurer || "לא צוין"})`
+          : formData.hasCurrentInsurance === "no"
+            ? "לא"
+            : "לא צוין"
+      }`,
+      `סכום כיסוי מבוקש: ${formData.coverageAmount || "לא צוין"}`,
+      `כיסוי צד ג': ${formData.thirdPartyCoverage ? "כן" : "לא"}`,
+      `כיסוי אונליין: ${formData.onlineCoverage ? "כן" : "לא"}`,
+    ]
+
+    if (formData.notes.trim()) {
+      lines.push(`הערות: ${formData.notes.trim()}`)
+    }
+
+    return lines.join("\n")
+  }
+
+  const submitRequest = async () => {
+    if (isSubmitting) {
+      return
+    }
+
+    setIsSubmitting(true)
+    setError("")
+
+    try {
+      const response = await fetch("/api/service-requests", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          category: "insurance",
+          details: buildDetails(),
+          consent: formData.consent,
+        }),
+      })
+
+      if (!response.ok) {
+        const payload = await response.json().catch(() => null)
+        const message =
+          payload?.error === "PROFILE_REQUIRED"
+            ? "כדי לשלוח בקשה יש להשלים פרופיל מטפל."
+            : payload?.error === "CONSENT_REQUIRED"
+              ? "יש לאשר את תנאי ההעברה לפני שליחת הבקשה."
+              : payload?.error === "UNAUTHORIZED"
+                ? "יש להתחבר כדי לשלוח בקשה."
+                : "שליחת הבקשה נכשלה. נסו שוב בעוד רגע."
+        setError(message)
+        return
+      }
+
+      router.push("/dashboard/services?success=insurance")
+    } catch {
+      setError("שליחת הבקשה נכשלה. נסו שוב בעוד רגע.")
+    } finally {
+      setIsSubmitting(false)
+    }
+  }
+
+  const handleNext = async () => {
     if (currentStep < STEPS.length - 1) {
       setCurrentStep(currentStep + 1)
-    } else if (formData.consent) {
-      // Submit form
-      router.push("/dashboard/services?success=insurance")
+      return
+    }
+
+    if (formData.consent) {
+      await submitRequest()
     }
   }
 
@@ -288,13 +356,26 @@ export default function InsuranceRequestPage() {
 
                 {/* Navigation */}
                 <div className="flex justify-between pt-6 border-t border-border">
-                  <Button type="button" variant="outline" onClick={handleBack}>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={handleBack}
+                    disabled={isSubmitting}
+                  >
                     {currentStep === 0 ? "ביטול" : "חזרה"}
                   </Button>
-                  <Button onClick={handleNext} disabled={currentStep === 2 && !formData.consent}>
+                  <Button
+                    onClick={handleNext}
+                    disabled={isSubmitting || (currentStep === 2 && !formData.consent)}
+                  >
                     {currentStep === 2 ? "שליחת בקשה" : "הבא"}
                   </Button>
                 </div>
+                {error && (
+                  <p className="text-sm text-destructive" role="alert">
+                    {error}
+                  </p>
+                )}
               </CardContent>
             </Card>
           </div>
