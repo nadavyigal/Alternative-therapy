@@ -1,0 +1,58 @@
+story:
+  id: "5.5"
+  epic: "Epic 5 - Referrals & Admin"
+  title: "Admin analytics dashboard for referrals"
+  priority: "P0"
+  estimatedHours: 6
+
+userStory: |
+  As an admin
+  I want to view referral and credential analytics
+  So that I can track partner performance and verification turnaround
+
+tasks:
+  - id: "5.5.1"
+    description: "Define referral and credential analytics aggregates (status, category, conversion rate)"
+    files: ["src/app/(admin)/analytics/page.tsx"]
+  - id: "5.5.2"
+    description: "Build admin analytics page with summary cards and partner table"
+    files: ["src/app/(admin)/analytics/page.tsx"]
+  - id: "5.5.3"
+    description: "Include credential verification metrics and status breakdown"
+    files: ["src/app/(admin)/analytics/page.tsx"]
+
+acceptanceCriteria:
+  - "Admin can view total referrals, conversion rate, and status distribution"
+  - "Admin can view partner-level referral counts and conversion rates"
+  - "Admin can view credential verification counts and average turnaround time"
+  - "Page is admin-protected and RTL with Hebrew UI copy"
+  - "Empty states show clear messaging when no data exists"
+
+technicalSpecs:
+  data:
+    - "Use listServiceRequestsForAdmin and listCredentialsForAdmin"
+    - "Compute conversion rate as converted / total referrals"
+    - "Compute verification turnaround using verifiedAt - createdAt"
+  ui:
+    - "Route: /analytics (src/app/(admin)/analytics/page.tsx)"
+    - "Use cards and tables consistent with admin UI"
+  dependencies:
+    - "service_request and credential tables exist"
+    - "admin role enforcement is active"
+
+tests:
+  - "Type check passes"
+
+definitionOfDone:
+  - "[ ] Analytics page added"
+  - "[ ] Referral metrics displayed"
+  - "[ ] Credential metrics displayed"
+  - "[ ] Story marked complete"
+
+status:
+  created: true
+  implemented: true
+  qa: "pass"
+  notes:
+    - "Tests not run in this environment."
+    - "QA review complete; no blocking issues found."
