@@ -1,5 +1,9 @@
-import { betterAuth } from "better-auth"
+﻿import { betterAuth } from "better-auth"
 import { drizzleAdapter } from "better-auth/adapters/drizzle"
+import {
+  sendPasswordResetEmail as sendPasswordResetEmailMessage,
+  sendVerificationEmail as sendVerificationEmailMessage,
+} from "./email"
 import { db } from "./db"
 
 const googleClientId = process.env.GOOGLE_CLIENT_ID
@@ -8,6 +12,7 @@ const facebookClientId = process.env.FACEBOOK_CLIENT_ID
 const facebookClientSecret = process.env.FACEBOOK_CLIENT_SECRET
 
 export const auth = betterAuth({
+  baseURL: process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000",
   database: drizzleAdapter(db, {
     provider: "pg",
   }),
@@ -54,17 +59,47 @@ export const auth = betterAuth({
   emailAndPassword: {
     enabled: true,
     sendResetPassword: async ({ user, url }) => {
-      // Log password reset URL to terminal (no email integration yet)
-      // eslint-disable-next-line no-console
-      console.log(`\n${"=".repeat(60)}\nPASSWORD RESET REQUEST\nUser: ${user.email}\nReset URL: ${url}\n${"=".repeat(60)}\n`)
+      const result = await sendPasswordResetEmailMessage({
+        to: user.email,
+        name: user.name,
+        url,
+      })
+
+      if (result.skipped && process.env.NODE_ENV !== "production") {
+        console.warn(`Password reset URL for ${user.email}: ${url}`)
+        return
+      }
+
+      if (!result.ok) {
+        console.warn(
+          `[auth] Failed to send password reset email to ${user.email}: ${
+            result.error || "unknown error"
+          }`
+        )
+      }
     },
   },
   emailVerification: {
     sendOnSignUp: true,
     sendVerificationEmail: async ({ user, url }) => {
-      // Log verification URL to terminal (no email integration yet)
-      // eslint-disable-next-line no-console
-      console.log(`\n${"=".repeat(60)}\nEMAIL VERIFICATION\nUser: ${user.email}\nVerification URL: ${url}\n${"=".repeat(60)}\n`)
+      const result = await sendVerificationEmailMessage({
+        to: user.email,
+        name: user.name,
+        url,
+      })
+
+      if (result.skipped && process.env.NODE_ENV !== "production") {
+        console.warn(`Email verification URL for ${user.email}: ${url}`)
+        return
+      }
+
+      if (!result.ok) {
+        console.warn(
+          `[auth] Failed to send verification email to ${user.email}: ${
+            result.error || "unknown error"
+          }`
+        )
+      }
     },
   },
 })

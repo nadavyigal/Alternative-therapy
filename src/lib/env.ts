@@ -1,4 +1,4 @@
-import { z } from "zod";
+﻿import { z } from "zod";
 
 /**
  * Server-side environment variables schema.
@@ -6,7 +6,10 @@ import { z } from "zod";
  */
 const serverEnvSchema = z.object({
   // Database - use fallback for development UI preview
-  POSTGRES_URL: z.string().url("Invalid database URL").default("postgresql://localhost:5432/therapistos_dev"),
+  POSTGRES_URL: z
+    .string()
+    .url("Invalid database URL")
+    .default("postgresql://localhost:5432/therapistos_dev"),
 
   // Authentication - use fallback for development UI preview
   BETTER_AUTH_SECRET: z
@@ -23,6 +26,11 @@ const serverEnvSchema = z.object({
   // AI
   OPENROUTER_API_KEY: z.string().optional(),
   OPENROUTER_MODEL: z.string().default("openai/gpt-4o-mini"),
+
+  // Email
+  RESEND_API_KEY: z.string().optional(),
+  RESEND_FROM_EMAIL: z.string().optional(),
+  RESEND_FROM: z.string().optional(),
 
   // Storage
   BLOB_READ_WRITE_TOKEN: z.string().optional(),
@@ -96,13 +104,36 @@ export function checkEnv(): void {
   if (!process.env.POSTGRES_URL && !isDev) {
     throw new Error("POSTGRES_URL is required");
   } else if (!process.env.POSTGRES_URL && isDev) {
-    warnings.push("POSTGRES_URL not set. Using fallback (database features will not work).");
+    warnings.push(
+      "POSTGRES_URL not set. Using fallback (database features will not work)."
+    );
   }
 
   if (!process.env.BETTER_AUTH_SECRET && !isDev) {
     throw new Error("BETTER_AUTH_SECRET is required");
   } else if (!process.env.BETTER_AUTH_SECRET && isDev) {
-    warnings.push("BETTER_AUTH_SECRET not set. Using fallback (authentication will not work).");
+    warnings.push(
+      "BETTER_AUTH_SECRET not set. Using fallback (authentication will not work)."
+    );
+  }
+
+  if (!process.env.NEXT_PUBLIC_APP_URL && !isDev) {
+    throw new Error("NEXT_PUBLIC_APP_URL is required");
+  } else if (!process.env.NEXT_PUBLIC_APP_URL && isDev) {
+    warnings.push(
+      "NEXT_PUBLIC_APP_URL not set. Using fallback (client URLs may be incorrect)."
+    );
+  }
+
+  const resendFrom = process.env.RESEND_FROM_EMAIL || process.env.RESEND_FROM;
+  if ((!process.env.RESEND_API_KEY || !resendFrom) && !isDev) {
+    throw new Error(
+      "RESEND_API_KEY and RESEND_FROM_EMAIL are required for auth emails"
+    );
+  } else if (!process.env.RESEND_API_KEY || !resendFrom) {
+    warnings.push(
+      "Resend email is not configured. Auth emails and lead notifications will be skipped."
+    );
   }
 
   // Check optional variables and warn
@@ -124,8 +155,8 @@ export function checkEnv(): void {
 
   // Log warnings in development
   if (isDev && warnings.length > 0) {
-    console.warn("\n⚠️  Environment warnings (UI preview mode):");
+    console.warn("\nEnvironment warnings (UI preview mode):");
     warnings.forEach((w) => console.warn(`   - ${w}`));
-    console.warn("\n   💡 Create .env.local file to enable full functionality.\n");
+    console.warn("\nCreate .env.local file to enable full functionality.\n");
   }
 }
