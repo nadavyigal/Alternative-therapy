@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom';
 import { TherapistSidebar } from '../../components/therapist/TherapistSidebar';
 import { Card } from '../../components/ui/card';
 import { Button } from '../../components/ui/button';
@@ -36,7 +37,9 @@ export function TherapistProfile() {
                                         </div>
                                     </div>
                                 </div>
-                                <Button>עריכת פרופיל</Button>
+                                <Button asChild>
+                                    <Link to="/profile/edit">עריכת פרופיל</Link>
+                                </Button>
                             </div>
                         </Card>
 

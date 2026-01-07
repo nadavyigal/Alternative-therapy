@@ -1,4 +1,5 @@
 import { TherapistProfile } from './pages/therapist/TherapistProfile';
+import { TherapistProfileEdit } from './pages/therapist/TherapistProfileEdit';
 import { TherapistSettings } from './pages/therapist/TherapistSettings';
 import { TherapistLogin } from './pages/therapist/TherapistLogin';
 import { PatientLogin } from './pages/PatientLogin'; // Note: I put PatientLogin in pages/ root to separate from therapist flow
@@ -29,6 +30,7 @@ export default function App() {
         <Route path="/dashboard" element={<TherapistDashboard />} />
         <Route path="/leads" element={<TherapistLeads />} />
         <Route path="/profile" element={<TherapistProfile />} />
+        <Route path="/profile/edit" element={<TherapistProfileEdit />} />
         <Route path="/settings" element={<TherapistSettings />} />
 
         <Route path="/admin-services" element={<AdminServicesHub />} />
