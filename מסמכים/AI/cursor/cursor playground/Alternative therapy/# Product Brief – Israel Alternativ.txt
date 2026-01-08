@@ -1,0 +1,184 @@
+# Product Brief – Israel Alternative Therapist Platform
+
+## 1. Overview
+
+**Working name:** TBA  
+**Type:** Two-sided web platform (directory + admin/financial services)  
+**Market:** Israel, Hebrew-first  
+**Primary users:**
+- Alternative / complementary therapists and small clinics.
+- Clients in Israel looking for trusted therapists.
+- Professional partners: insurance agents, pension advisors, CPAs/tax advisors.
+
+The platform helps therapists **grow their practice** and **offload admin/financial burden**, while giving clients a **trustworthy way to discover and choose therapists**.
+
+---
+
+## 2. Problem
+
+### 2.1 Therapist problems
+
+1. **Client acquisition is fragmented & weakly digital**
+   - Heavy reliance on word-of-mouth, FB/WhatsApp groups, and generic directories.
+   - Hard to showcase modalities, niche expertise, and credibility in one place.
+
+2. **Admin & financial burden**
+   - Need professional liability insurance (especially for renting spaces or working with clinics).
+   - Confusion and friction around pension / קרנות השתלמות / long-term savings.
+   - Annual tax reporting to רשות המיסים is stressful and time-consuming.
+
+3. **Lack of structured online identity**
+   - Few structured places to show diplomas, certificates, training paths.
+   - No easy way to present trust markers tailored to the Israel context.
+
+### 2.2 Client problems
+
+1. **Hard to discover suitable therapists**
+   - Many overlapping modalities and unclear differences.
+   - Poor search/filter experience in existing groups and directories.
+
+2. **Trust and safety concerns**
+   - Hard to know who is trained vs. self-declared.
+   - Reviews scattered, unverified, or easily gamed.
+
+3. **Friction to contact and start**
+   - No standard way to compare options by language, location, remote/in-person, price range.
+   - No consistent call-to-action or expectation-setting after contact.
+
+---
+
+## 3. Solution
+
+A **trusted, Israel-first platform** where:
+
+- **Therapists**:
+  - Create a structured, public profile with modalities, languages, locations, pricing, and **credential verification**.
+  - Receive **qualified client leads**.
+  - Request help with **insurance**, **pension/קרנות השתלמות**, and **annual tax filing** via **licensed partners**, with transparent status tracking.
+
+- **Clients**:
+  - Discover therapists across Israel with **clear filters** (issue, modality, location, language, remote, budget).
+  - See **verified credentials** and moderated reviews.
+  - Safely contact therapists with transparent next steps and disclaimers.
+
+- **Partners (insurance/pension/tax)**:
+  - Receive **qualified leads** from a niche audience (therapists).
+  - Track lead status and conversion via a simple portal or workflow.
+
+---
+
+## 4. Positioning & Value Proposition
+
+### 4.1 One-line positioning
+
+> **The trusted Israel-first platform that helps alternative therapists grow and simplify their admin, while giving clients a clear, verified way to find the right therapist.**
+
+### 4.2 Core value pillars
+
+1. **Trust & Transparency**
+   - Verified diplomas & licenses where possible.
+   - Clear review moderation and visible policies.
+   - Explicit disclaimers about what therapy is and is not (medical/emergency).
+
+2. **Admin & Financial Leverage**
+   - Single hub for insurance, pension, and tax workflows via licensed pros.
+   - Status tracking instead of email chaos and “who did I send what to?”
+
+3. **Israel-local Experience**
+   - Hebrew-first, RTL-optimized UI.
+   - Local categories, local cities, local partners.
+   - Flows tailored to Israeli legal, financial, and tax realities.
+
+---
+
+## 5. Target Segments
+
+### 5.1 Therapists
+
+- **New solo therapists (0–2 years)**  
+  Need visibility, guidance on admin/finance, low-cost entry.
+
+- **Growing independents (2–5+ years)**  
+  Already have a client base, want stability, optimization, and smarter admin.
+
+- **Small clinics / centers**  
+  Multi-therapist operations that need “multi-profile + shared admin” features.
+
+**Service needs:**  
+- Insurance only → have accountant/pension covered.  
+- Financial duo → focus on pension + tax.  
+- Full-stack → want one place to source all three via partners.
+
+### 5.2 Clients
+
+- Issue-driven (e.g., anxiety, pain, fertility).
+- Modality believers (e.g., Reiki, acupuncture).
+- Recommendation-followers (validate a name they got elsewhere).
+- Budget-sensitive (price range important).
+- Location-first (near home / work).
+- Remote-preferring (video/phone OK, care more about language & fit).
+
+---
+
+## 6. Differentiation
+
+- Focused on **alternative/complementary** therapists + adjacent regulated professionals, not just generic mental-health directories.
+- **Trust-first UX**: credentials, badges, moderated reviews, and clear disclaimers.
+- Deep focus on **therapist admin & financial services** with workflow tracking, not just listing + booking.
+- Built specifically for **Israel** – language, law, financial/tax structure, and partner ecosystem.
+
+---
+
+## 7. Scope for MVP
+
+**In-scope (core MVP):**
+
+- Therapist onboarding & profile builder.
+- Credential upload & a simple admin verification workflow.
+- Public directory, search, and therapist cards.
+- Lead/contact capture from client to therapist.
+- Service request flows for:
+  - Professional liability insurance.
+  - Pension / קרנות השתלמות.
+  - Annual tax filing / submissions.
+- Admin dashboard for triage and status tracking.
+
+**Out-of-scope (until later phases):**
+
+- Full tele-therapy platform (video, full scheduling, in-app payments).
+- Full accounting/ERP for clinics.
+- Mobile apps.
+- Sophisticated recommendation algorithms.
+
+---
+
+## 8. Success Metrics (early-stage)
+
+**North-star:**  
+- Number of **successful therapist–client matches per month** (leads that turn into booked sessions).
+
+**Supporting metrics:**
+
+Therapist side:
+- # of therapists signed up.
+- % with published profiles.
+- % with at least one verified credential.
+- # of ServiceRequests (insurance/pension/tax) created and completed.
+
+Client side:
+- # of unique visitors to directory.
+- Search → card view → lead conversion rates.
+
+Business side:
+- # of active partners.
+- # of completed partner referrals per month.
+- ARPU from therapists + partner revenue.
+
+---
+
+## 9. Key Risks & High-level Mitigations
+
+- **Adoption risk (therapists)** – start with specific niches, partner with schools/associations, and offer generous early adopter benefits.
+- **Trust/compliance risk** – strict verification & moderation, strong legal review, and clear role boundaries for partners.
+- **Data/privacy risk** – implement robust security practices, comply with local privacy law, and minimize sensitive data storage.
+- **Monetization misalignment** – transparent pricing, low friction to join, revenue primarily from partners at first, then carefully introduce subscriptions.

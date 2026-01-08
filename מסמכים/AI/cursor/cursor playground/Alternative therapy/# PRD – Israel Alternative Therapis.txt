@@ -1,0 +1,307 @@
+# PRD – Israel Alternative Therapist Platform (MVP)
+
+## 1. Document Info
+
+- **Owner:** Product (BMAD-METHOD)
+- **Version:** v1.0
+- **Status:** Draft for MVP
+- **Last updated:** TBA
+
+---
+
+## 2. Summary
+
+We are building a **two-sided web platform** for Israel that:
+
+- Helps alternative/complementary therapists **grow their practice** and **offload admin/financial tasks** via licensed partners.
+- Helps clients **discover and choose** trusted therapists with structured profiles, verified credentials, and reviews.
+- Monetizes through **partner referral fees** and **therapist subscriptions** (later also value-aligned lead models).
+
+---
+
+## 3. Goals & Non-goals
+
+### 3.1 Goals (MVP)
+
+1. Allow therapists in Israel to **create and publish a structured profile**.
+2. Allow clients to **search, filter, and contact** therapists with confidence.
+3. Provide therapists with a **simple path to request admin/financial services** (insurance, pension/קרנות השתלמות, tax).
+4. Give admins and partners **basic tools to manage verification, leads, and service workflows**.
+5. Capture core analytics on signups, profile publication, leads, and service requests.
+
+### 3.2 Non-goals (MVP)
+
+- Full telehealth experience (video sessions, in-app chat, full scheduling with calendar sync).
+- Full clinic ERP or accounting system (invoicing, full bookkeeping).
+- Detailed automated matching algorithms beyond simple search/sort.
+- Native mobile apps.
+
+---
+
+## 4. User Stories (Core)
+
+### 4.1 Therapist
+
+- As a therapist, I want to **sign up and create a profile** so clients can find me.
+- As a therapist, I want to **upload my diplomas/certificates** so I can earn trust via verification.
+- As a therapist, I want to **receive client leads** in a secure and organized way.
+- As a therapist, I want to **request help with insurance/pension/tax** so I can focus more on my practice.
+- As a therapist, I want to **see the status** of my admin service requests so I know where things stand.
+
+### 4.2 Client
+
+- As a client, I want to **search for therapists by modality, location, language, and issue** so I can find relevant options.
+- As a client, I want to **view clear profiles with trust markers** so I can feel safe when choosing.
+- As a client, I want a **simple contact form** to reach a therapist without exposing my details in public.
+- As a client (later), I want to **leave a review** after sessions to help others.
+
+### 4.3 Admin
+
+- As an admin, I want to **review and verify credentials** so platform trust remains high.
+- As an admin, I want to **moderate reviews and content** to prevent abuse/harm.
+- As an admin, I want to **triage leads and service requests** to keep workflows running smoothly.
+- As an admin, I want **basic dashboards** to monitor activity and quality.
+
+### 4.4 Partner
+
+- As a partner (insurance/pension/tax), I want to **receive qualified leads** from therapists.
+- As a partner, I want to **update lead/service statuses** so the platform can track progress.
+- As a partner, I want **clean, compliant data** only for the therapists who opted in.
+
+---
+
+## 5. Functional Requirements
+
+### 5.1 User & Auth
+
+- **FR-1**: Users can register via email/password and mandatory phone verification (OTP).
+- **FR-2**: Support roles: Client (optional login), Therapist, Admin, Partner User.
+- **FR-3**: Support login, logout, and password reset flows.
+- **FR-4**: Role-based access enforced server-side.
+
+### 5.2 Therapist Onboarding & Profile
+
+- **FR-5**: Therapist can fill in mandatory profile fields:
+  - First & last name
+  - Professional title (free text + optional regulated title)
+  - Modality selection (multi-select from taxonomy)
+  - Main location (city + area) and remote/in-person flags
+  - Languages (multi-select)
+  - Years of experience (range)
+  - Price range (optional)
+  - Short bio
+- **FR-6**: Therapist can save a draft profile before publishing.
+- **FR-7**: System validates required fields; cannot publish until minimum completeness is met.
+- **FR-8**: Published profiles become visible in the public directory.
+- **FR-9**: Admin can unpublish or temporarily hide a profile.
+
+### 5.3 Credential Upload & Verification
+
+- **FR-10**: Therapist can upload one or more credential documents (PDF/JPG/PNG).
+- **FR-11**: For each credential, therapist provides:
+  - Type (Diploma / Certificate / License / Other)
+  - Issuing institution
+  - Issue date (optional)
+- **FR-12**: Credentials enter a **Pending** state visible in admin dashboard.
+- **FR-13**: Admin can:
+  - View the document.
+  - Set verification status: Pending, Verified, Rejected.
+  - Add internal notes and a short rejection reason.
+- **FR-14**: Therapist profile shows:
+  - List of credentials with verification badges.
+  - Optional label for regulated license (e.g. Psychologist) if verified.
+
+### 5.4 Directory & Search (Client-facing)
+
+- **FR-15**: Public directory accessible without login.
+- **FR-16**: Search by:
+  - Free-text query (name, modality, issue).
+  - Filters: modality, location, remote/in-person, language.
+- **FR-17**: Results shown as cards with:
+  - Name, main modalities, location, languages, brief tagline, trust badges.
+- **FR-18**: Clicking a card opens the therapist’s full profile.
+
+### 5.5 Contact & Lead Management
+
+- **FR-19**: On profile page, clients can submit a contact form with:
+  - Name
+  - Email and/or phone
+  - Short description of issue
+  - Preferred contact channel/time (optional)
+- **FR-20**: Submitting form creates a **Lead** entity and:
+  - Sends confirmation message to client.
+  - Sends notification (email; later SMS) to therapist.
+- **FR-21**: Leads are listed in therapist dashboard (V1+) and admin panel.
+- **FR-22**: Leads have statuses: New, SentToTherapist, Contacted, Booked, ClosedNoResponse, Spam.
+
+### 5.6 Service Request Flows (Therapist → Partner)
+
+- **FR-23**: Therapist dashboard includes calls-to-action for:
+  - “Get professional liability insurance”
+  - “Pension & קרן השתלמות help”
+  - “Annual tax filing / bookkeeping help”
+- **FR-24**: Each flow opens a form prefilled with therapist data.
+- **FR-25**: Submitting creates a **ServiceRequest** entity with type: Insurance, Pension, Tax.
+- **FR-26**: Admin can:
+  - View all ServiceRequests in a queue.
+  - Qualify and assign to a Partner.
+  - Update statuses: New, Qualified, SentToPartner, InProgress, Completed, ClosedNoFit.
+- **FR-27**: Partner users see assigned ServiceRequests in their portal and can update status + notes.
+
+### 5.7 Admin Panel & Moderation
+
+- **FR-28**: Admin panel with:
+  - Therapist list (filters: status, verification).
+  - Credential queue.
+  - Leads list with filters.
+  - ServiceRequests list with filters.
+- **FR-29**: Admin can:
+  - Promote/demote users to roles (Therapist, Admin, PartnerUser).
+  - Manually flag users, profiles, reviews, or partners for issues.
+- **FR-30**: Admin can create/update taxonomy (modalities, issues) via protected UI or config.
+
+### 5.8 Reviews (V1, post-MVP)
+
+- **FR-31**: Client receives a private link to review a therapist after an interaction.
+- **FR-32**: Review form: rating (1–5) + short text + optional tags.
+- **FR-33**: Reviews default to PendingModeration.
+- **FR-34**: Admin can approve/reject; approved reviews appear on profile.
+
+---
+
+## 6. Data Model (Conceptual)
+
+### 6.1 Core entities
+
+- **User**
+  - id, email, phone, passwordHash, role, createdAt, lastLoginAt, status.
+
+- **Therapist**
+  - id (FK User), name, bio, title, yearsExperience, priceRange, isClinic, status (Draft/Published/Hidden).
+
+- **Category (Modality)**
+  - id, name, slug, parentCategoryId.
+
+- **TherapistCategory**
+  - therapistId, categoryId.
+
+- **Credential**
+  - id, therapistId, type, issuer, issueDate, fileUrl, verificationStatus, verifiedByAdminId, verifiedAt, rejectionReason.
+
+- **Review**
+  - id, therapistId, authorUserId (optional), rating, text, status, createdAt.
+
+- **Lead**
+  - id, therapistId, clientName, clientEmail, clientPhone, message, status, source, createdAt, updatedAt, spamFlag (bool).
+
+- **ServiceRequest**
+  - id, therapistId, type (Insurance/Pension/Tax), detailsJson, partnerId, currentStatus, createdAt, closedAt.
+
+- **Partner**
+  - id, name, type, licenseDetails, contactEmail, contactPhone, status.
+
+- **StatusTimeline**
+  - id, serviceRequestId, status, actorUserId, timestamp, note.
+
+- **Location**
+  - id, city, area, geoPoint.
+
+- **TherapistLocation**
+  - therapistId, locationId, remoteSupported (bool).
+
+- **Language**
+  - id, name.
+
+- **TherapistLanguage**
+  - therapistId, languageId.
+
+(Implementation can adjust; above is conceptual.)
+
+---
+
+## 7. Non-functional Requirements
+
+### 7.1 Security & Privacy
+
+- All traffic via HTTPS.
+- Passwords hashed with strong algorithm (e.g., bcrypt/argon2).
+- Document storage secured and not publicly exposed by default.
+- Role-based access control on all backend endpoints.
+- Logs and audit trails for:
+  - Login attempts.
+  - Credential verification actions.
+  - Moderation actions.
+  - ServiceRequest status changes.
+- Compliance with Israeli privacy regulations (data subject rights, deletion, consent and purpose limitation).
+
+### 7.2 Performance & Availability
+
+- Directory search should respond within **< 1–2 seconds** for typical queries.
+- System should handle at least low thousands of concurrent users with path to scale.
+- Availability target for MVP: **99% uptime** over a month (best effort with small team).
+
+### 7.3 Localization & Accessibility
+
+- Full RTL support, Hebrew-first copy.
+- Basic accessibility adherence (semantic HTML, keyboard navigation, readable contrasts).
+
+---
+
+## 8. Analytics & Metrics
+
+### 8.1 Events
+
+- **Acquisition:**
+  - `LandingPageViewed`
+  - `DirectoryViewed`
+  - `SignupStarted`
+  - `SignupCompleted` (with role)
+
+- **Activation:**
+  - `ProfilePublished`
+  - `CredentialUploaded`
+  - `CredentialVerified`
+  - `LeadSubmitted`
+  - `ServiceRequestCreated`
+
+- **Retention:**
+  - `TherapistLoggedIn`
+  - `LeadStatusUpdated`
+  - `ServiceRequestStatusUpdated`
+
+- **Revenue (later):**
+  - `SubscriptionStarted`
+  - `SubscriptionUpgraded`
+  - `PartnerReferralRecorded`
+  - `PartnerReferralPaid`
+
+### 8.2 Dashboards
+
+Initial simple dashboards:
+
+- Therapist funnel:
+  - Visitors → Signups → Published Profiles → Profiles with Verified Credential.
+- Client funnel:
+  - Directory views → Card views → Leads.
+- Admin services:
+  - ServiceRequests by type and status.
+- Partner performance:
+  - Leads per partner, conversions per partner (once data available).
+
+---
+
+## 9. Release Criteria (MVP)
+
+- At least:
+  - X (e.g. 20) therapists onboarded with published profiles and ≥1 verified credential.
+  - End-to-end test successful for:
+    - Client search → card view → lead → email to therapist.
+    - Therapist service request → assignment → partner view → status change.
+- No **critical** P0 bugs in:
+  - Signup/login.
+  - Profile publish.
+  - Directory search.
+  - Lead submission.
+  - Admin panel for verification.
+- Basic security review complete.
+- Legal/terms/privacy reviewed by counsel.
