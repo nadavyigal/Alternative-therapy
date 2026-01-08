@@ -7,6 +7,10 @@ import "./globals.css"
 const rubik = Rubik({
   subsets: ["hebrew", "latin"],
   weight: ["400", "500", "600", "700"],
+  display: "swap",
+  fallback: ["Arial", "Helvetica", "sans-serif"],
+  preload: true,
+  adjustFontFallback: true,
 })
 
 export const metadata: Metadata = {
