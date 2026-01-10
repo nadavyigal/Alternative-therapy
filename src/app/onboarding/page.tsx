@@ -10,7 +10,7 @@ import { Progress } from "@/components/ui/progress"
 import { CheckCircle2, Upload, X } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
 
-const STEPS = ["????? ??????", "????? ?????", "????? ????? ???? ???", "????? ?????", "?????? ???????", "????"]
+const STEPS = ["פרטים אישיים", "אימות טלפון", "תחומי טיפול וקהל יעד", "מיקום ושפות", "מסמכים ואימות", "סיום"]
 
 export default function OnboardingPage() {
   const router = useRouter()
@@ -40,7 +40,7 @@ export default function OnboardingPage() {
 
   const handleNext = () => {
     if (currentStep === 1 && !formData.phoneVerified) {
-      setOtpError("?? ???? ?? ???? ?????? ??? ??????.")
+      setOtpError("נא לאמת את מספר הטלפון לפני המשך.")
       return
     }
     if (currentStep < STEPS.length - 1) {
@@ -86,7 +86,7 @@ export default function OnboardingPage() {
       setOtpStatus("sent")
     } catch {
       setOtpStatus("error")
-      setOtpError("?? ?????? ????? ???. ??? ???.")
+      setOtpError("לא הצלחנו לשלוח קוד. נסו שוב.")
     }
   }
 
@@ -110,7 +110,7 @@ export default function OnboardingPage() {
       setOtpStatus("verified")
     } catch {
       setOtpStatus("error")
-      setOtpError("??? ?? ???? ?? ??? ?????.")
+      setOtpError("הקוד שהוזן אינו תקין.")
     }
   }
 
@@ -153,7 +153,7 @@ export default function OnboardingPage() {
             <div className="bg-teal-50 border border-teal-200 rounded-xl p-6 sticky top-8">
               <h3 className="font-bold text-teal-900 mb-3">
                 {currentStep === 0 && "זה מה שהמטופלים יראו עליך ראשונים"}
-                {currentStep === 1 && "?????? ???? ????? ??? ?????? ?? ??????"}
+                {currentStep === 1 && "אימות הטלפון מאפשר לנו לשמור על קשר עמכם"}
                 {currentStep === 2 && "עזרו למטופלים למצוא אתכם"}
                 {currentStep === 3 && "היכן ובאילו שפות אתם מטפלים"}
                 {currentStep === 4 && "אימות מקצועי"}
@@ -179,16 +179,16 @@ export default function OnboardingPage() {
                 {currentStep === 1 && (
                   <>
                     <li className="flex gap-2">
-                      <span>?</span>
-                      <span>???? ??? ????? ?-SMS ????? ???</span>
+                      <span>•</span>
+                      <span>נשלח קוד אימות ב-SMS למספר שלכם</span>
                     </li>
                     <li className="flex gap-2">
-                      <span>?</span>
-                      <span>????? ???? ???? ????? ??????</span>
+                      <span>•</span>
+                      <span>הזינו את הקוד כדי לאמת את הטלפון</span>
                     </li>
                     <li className="flex gap-2">
-                      <span>?</span>
-                      <span>???? ???? ??? ??? ?? ????</span>
+                      <span>•</span>
+                      <span>הקוד תקף לשלוש דקות בלבד</span>
                     </li>
                   </>
                 )}
@@ -337,9 +337,9 @@ export default function OnboardingPage() {
               {/* Step 2: Phone Verification */}
               {currentStep === 1 && (
                 <div className="space-y-6">
-                  <h2 className="text-xl font-bold mb-6">????? ???? ?????</h2>
+                  <h2 className="text-xl font-bold mb-6">אימות מספר טלפון</h2>
                   <div className="space-y-2">
-                    <Label htmlFor="phone">???? ?????</Label>
+                    <Label htmlFor="phone">מספר טלפון</Label>
                     <Input
                       id="phone"
                       placeholder="050-123-4567"
@@ -357,7 +357,7 @@ export default function OnboardingPage() {
                       className="text-right"
                     />
                     <p className="text-sm text-muted-foreground">
-                      ???? ???? ??? ????? ?-SMS ??? ??????.
+                      נשלח לכם קוד אימות ב-SMS אל המספר.
                     </p>
                   </div>
 
@@ -367,16 +367,16 @@ export default function OnboardingPage() {
                       onClick={handleSendOtp}
                       disabled={!formData.phone || otpStatus === "sending" || otpStatus === "verifying" || formData.phoneVerified}
                     >
-                      {otpStatus === "sending" ? "????..." : "??? ??? ?????"}
+                      {otpStatus === "sending" ? "שולח..." : "שלח קוד אימות"}
                     </Button>
                     {formData.phoneVerified && (
-                      <span className="text-sm text-teal-700">???? ?????? ????.</span>
+                      <span className="text-sm text-teal-700">הטלפון אומת בהצלחה.</span>
                     )}
                   </div>
 
                   {(otpStatus === "sent" || otpStatus === "verifying" || otpStatus === "error") && !formData.phoneVerified && (
                     <div className="space-y-2">
-                      <Label htmlFor="otpCode">??? ?????</Label>
+                      <Label htmlFor="otpCode">קוד אימות</Label>
                       <Input
                         id="otpCode"
                         value={otpCode}
@@ -390,7 +390,7 @@ export default function OnboardingPage() {
                         onClick={handleVerifyOtp}
                         disabled={!otpCode || otpStatus === "verifying"}
                       >
-                        {otpStatus === "verifying" ? "????..." : "??? ???"}
+                        {otpStatus === "verifying" ? "מאמת..." : "אמת קוד"}
                       </Button>
                     </div>
                   )}

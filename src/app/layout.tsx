@@ -1,16 +1,17 @@
 import type React from "react"
 import type { Metadata } from "next"
-import { Rubik } from "next/font/google"
 import { Analytics } from "@vercel/analytics/next"
+import { Rubik } from "next/font/google"
 import "./globals.css"
 
 const rubik = Rubik({
   subsets: ["hebrew", "latin"],
   weight: ["400", "500", "600", "700"],
   display: "swap",
-  fallback: ["Arial", "Helvetica", "sans-serif"],
+  fallback: ["Arial", "Helvetica"],
   preload: true,
   adjustFontFallback: true,
+  variable: "--font-rubik",
 })
 
 export const metadata: Metadata = {
@@ -43,7 +44,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="he" dir="rtl">
-      <body className={`${rubik.className} font-sans antialiased`}>
+      <body className={`${rubik.variable} font-sans antialiased`}>
         {children}
         <Analytics />
       </body>
