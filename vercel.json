@@ -1,5 +1,1 @@
-﻿{
-  "buildCommand": "pnpm run build:ci",
-  "installCommand": "pnpm install",
-  "outputDirectory": ".next"
-}
+﻿{}
