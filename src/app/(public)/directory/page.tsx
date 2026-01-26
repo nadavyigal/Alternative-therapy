@@ -30,13 +30,14 @@ const mapValues = <T,>(rows: T[], key: keyof T) =>
 export default async function DirectoryPage({
   searchParams,
 }: {
-  searchParams?: DirectorySearchParams;
+  searchParams: Promise<DirectorySearchParams>;
 }) {
-  const city = toOptionalValue(searchParams?.city);
-  const modalityId = toOptionalValue(searchParams?.modalityId);
-  const issueId = toOptionalValue(searchParams?.issueId);
-  const onlineOnly = isTruthy(searchParams?.online);
-  const inPersonOnly = isTruthy(searchParams?.inPerson);
+  const resolvedParams = await searchParams;
+  const city = toOptionalValue(resolvedParams?.city);
+  const modalityId = toOptionalValue(resolvedParams?.modalityId);
+  const issueId = toOptionalValue(resolvedParams?.issueId);
+  const onlineOnly = isTruthy(resolvedParams?.online);
+  const inPersonOnly = isTruthy(resolvedParams?.inPerson);
 
   const [modalities, issues] = await Promise.all([
     listModalities(),

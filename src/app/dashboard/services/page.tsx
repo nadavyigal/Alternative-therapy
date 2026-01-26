@@ -55,20 +55,21 @@ const formatDateTime = (value: Date | string) => {
 }
 
 type ServicesPageProps = {
-  searchParams?: {
+  searchParams: Promise<{
     success?: string
-  }
+  }>
 }
 
 export default async function ServicesPage({
   searchParams,
 }: ServicesPageProps) {
+  const resolvedParams = await searchParams
   const session = await requireRole("therapist", { redirectTo: "/login" })
   const profile = await getTherapistProfileByUserId(session.user.id)
   const requests = profile
     ? await listServiceRequestsForProfileWithPartner(profile.id)
     : []
-  const successKey = searchParams?.success ?? ""
+  const successKey = resolvedParams?.success ?? ""
   const successLabel = SUCCESS_LABELS[successKey]
 
   return (

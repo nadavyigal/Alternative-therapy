@@ -56,11 +56,12 @@ export async function GET(request: Request) {
         ? partnerParam
         : undefined;
 
-  const requests = await listServiceRequestsForAdmin({
-    status,
-    category,
-    partnerId,
-  });
+  const adminFilters: Parameters<typeof listServiceRequestsForAdmin>[0] = {};
+  if (status) adminFilters.status = status;
+  if (category) adminFilters.category = category;
+  if (partnerId !== undefined) adminFilters.partnerId = partnerId;
+
+  const requests = await listServiceRequestsForAdmin(adminFilters);
 
   const header = [
     "id",

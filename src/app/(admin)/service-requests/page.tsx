@@ -72,23 +72,24 @@ const isCategory = (value?: string) =>
   Boolean(value && CATEGORY_LABELS[value]);
 
 type AdminServiceRequestsPageProps = {
-  searchParams?: {
+  searchParams: Promise<{
     status?: string;
     partner?: string;
     category?: string;
-  };
+  }>;
 };
 
 export default async function AdminServiceRequestsPage({
   searchParams,
 }: AdminServiceRequestsPageProps) {
-  const statusFilter = isServiceRequestStatus(searchParams?.status)
-    ? searchParams?.status
+  const resolvedParams = await searchParams;
+  const statusFilter = isServiceRequestStatus(resolvedParams?.status)
+    ? resolvedParams?.status
     : undefined;
-  const categoryFilter = isCategory(searchParams?.category)
-    ? searchParams?.category
+  const categoryFilter = isCategory(resolvedParams?.category)
+    ? resolvedParams?.category
     : undefined;
-  const partnerFilter = searchParams?.partner ?? "all";
+  const partnerFilter = resolvedParams?.partner ?? "all";
   const partnerId =
     partnerFilter === "all"
       ? undefined
@@ -96,12 +97,13 @@ export default async function AdminServiceRequestsPage({
         ? null
         : partnerFilter;
 
+  const adminFilters: Parameters<typeof listServiceRequestsForAdmin>[0] = {};
+  if (statusFilter) adminFilters.status = statusFilter;
+  if (categoryFilter) adminFilters.category = categoryFilter;
+  if (partnerId !== undefined) adminFilters.partnerId = partnerId;
+
   const [requests, partners] = await Promise.all([
-    listServiceRequestsForAdmin({
-      status: statusFilter,
-      category: categoryFilter,
-      partnerId,
-    }),
+    listServiceRequestsForAdmin(adminFilters),
     listPartners(),
   ]);
 

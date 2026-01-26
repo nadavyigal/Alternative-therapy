@@ -23,7 +23,8 @@ const rateLimitStore = new Map<string, { count: number; resetAt: number }>();
 const getClientIp = (req: Request) => {
   const forwarded = req.headers.get("x-forwarded-for");
   if (forwarded) {
-    return forwarded.split(",")[0].trim();
+    const firstIp = forwarded.split(",")[0];
+    return firstIp?.trim() ?? "unknown";
   }
   return req.headers.get("x-real-ip") || "unknown";
 };

@@ -36,7 +36,7 @@ export async function listCredentialsForProfile(therapistProfileId: string) {
 }
 
 export async function listCredentialsForAdmin(status?: CredentialStatus) {
-  let query = db
+  return db
     .select({
       credential,
       therapistProfile,
@@ -48,13 +48,8 @@ export async function listCredentialsForAdmin(status?: CredentialStatus) {
       eq(credential.therapistProfileId, therapistProfile.id)
     )
     .innerJoin(user, eq(therapistProfile.userId, user.id))
+    .where(status ? eq(credential.status, status) : undefined)
     .orderBy(desc(credential.createdAt));
-
-  if (status) {
-    query = query.where(eq(credential.status, status));
-  }
-
-  return query;
 }
 
 export async function updateCredentialStatus(

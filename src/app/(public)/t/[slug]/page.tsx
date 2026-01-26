@@ -11,9 +11,9 @@ import {
 import { LeadCaptureForm } from "@/components/directory/lead-capture-form";
 
 type ProfilePageProps = {
-  params: {
+  params: Promise<{
     slug: string;
-  };
+  }>;
 };
 
 const formatPrice = (min?: number | null, max?: number | null) => {
@@ -40,10 +40,11 @@ const getExperienceYears = (startedYear?: number | null) => {
 };
 
 export default async function PublicProfilePage({ params }: ProfilePageProps) {
+  const resolvedParams = await params;
   const [profile] = await db
     .select()
     .from(therapistProfile)
-    .where(eq(therapistProfile.slug, params.slug))
+    .where(eq(therapistProfile.slug, resolvedParams.slug))
     .limit(1);
 
   if (!profile || !profile.published) {

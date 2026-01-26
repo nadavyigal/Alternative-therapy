@@ -19,8 +19,9 @@ const toStringValue = (value: unknown) =>
 
 export async function PATCH(
   req: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
+  const resolvedParams = await params;
   let session;
 
   try {
@@ -49,7 +50,7 @@ export async function PATCH(
   const [existing] = await db
     .select()
     .from(lead)
-    .where(and(eq(lead.id, params.id), eq(lead.therapistProfileId, profile.id)))
+    .where(and(eq(lead.id, resolvedParams.id), eq(lead.therapistProfileId, profile.id)))
     .limit(1);
 
   if (!existing) {

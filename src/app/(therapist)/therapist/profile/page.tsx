@@ -19,10 +19,10 @@ import {
 } from "@/lib/therapy-taxonomy";
 
 type ProfilePageProps = {
-  searchParams?: {
+  searchParams: Promise<{
     saved?: string;
     error?: string;
-  };
+  }>;
 };
 
 const toStringValue = (formData: FormData, key: string) => {
@@ -94,6 +94,7 @@ const isAllowedFile = (
 export default async function TherapistProfilePage({
   searchParams,
 }: ProfilePageProps) {
+  const resolvedParams = await searchParams;
   const session = await requireRole("therapist");
   const [profile, modalities, issues] = await Promise.all([
     getTherapistProfileByUserId(session.user.id),
@@ -112,7 +113,7 @@ export default async function TherapistProfilePage({
   const selectedIssueIds = new Set(selectedIssues.map((row) => row.issue.id));
 
   const statusMessage = (() => {
-    if (searchParams?.saved) {
+    if (resolvedParams?.saved) {
       return (
         <div className="rounded-lg border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-800">
           הפרופיל נשמר בהצלחה.
@@ -120,7 +121,7 @@ export default async function TherapistProfilePage({
       );
     }
 
-    if (searchParams?.error === "displayName") {
+    if (resolvedParams?.error === "displayName") {
       return (
         <div className="rounded-lg border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-800">
           יש להזין שם תצוגה כדי לשמור את הפרופיל.
@@ -128,7 +129,7 @@ export default async function TherapistProfilePage({
       );
     }
 
-    if (searchParams?.error === "phone") {
+    if (resolvedParams?.error === "phone") {
       return (
         <div className="rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800">
           כדי לפרסם את הפרופיל יש לאמת מספר טלפון.
@@ -136,7 +137,7 @@ export default async function TherapistProfilePage({
       );
     }
 
-    if (searchParams?.error) {
+    if (resolvedParams?.error) {
       return (
         <div className="rounded-lg border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-800">
           לא הצלחנו לשמור את הפרופיל. נסו שוב.

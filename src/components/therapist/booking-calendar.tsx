@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useMemo, useState } from "react"
+import { useMemo, useState } from "react"
 import Link from "next/link"
 import { CalendarClock, CheckCircle2, CircleSlash, Clock } from "lucide-react"
 import { Calendar } from "@/components/ui/calendar"
@@ -68,12 +68,8 @@ const formatTime = (value: Date) =>
   })
 
 export function BookingCalendar({ bookings, hasProfile }: BookingCalendarProps) {
-  const [selectedDate, setSelectedDate] = useState<Date | undefined>(undefined)
+  const [selectedDate, setSelectedDate] = useState<Date | undefined>(new Date())
   const [statusFilter, setStatusFilter] = useState<BookingStatus | "all">("all")
-
-  useEffect(() => {
-    setSelectedDate(new Date())
-  }, [])
 
   const normalizedBookings = useMemo<BookingWithDate[]>(() => {
     return bookings

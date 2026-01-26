@@ -63,7 +63,7 @@ export async function listServiceRequestsForAdmin(
         : undefined
   );
 
-  let query = db
+  return db
     .select({
       serviceRequest,
       therapistProfile,
@@ -77,13 +77,8 @@ export async function listServiceRequestsForAdmin(
     )
     .innerJoin(user, eq(therapistProfile.userId, user.id))
     .leftJoin(partner, eq(serviceRequest.partnerId, partner.id))
+    .where(whereClause)
     .orderBy(desc(serviceRequest.createdAt));
-
-  if (whereClause) {
-    query = query.where(whereClause);
-  }
-
-  return query;
 }
 
 export async function updateServiceRequestStatus(
