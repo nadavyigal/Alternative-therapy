@@ -1,0 +1,8 @@
+{
+  "permissions": {
+    "allow": [
+      "Read(//c/Users/nadav/automation-cowork/**)",
+      "Bash(tasklist:*)"
+    ]
+  }
+}
